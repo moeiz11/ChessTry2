@@ -7,9 +7,11 @@ namespace ChessTry2
     {
         static void Main(string[] args)
         {
-                int scale = 12;
-                Board board = new Board(scale);
-                board.select();      
+            int scale = 8;
+            Board board = new Board(scale);
+            board.select();
+          
+
         }
     }
 }

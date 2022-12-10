@@ -118,13 +118,13 @@ namespace ChessTry2
         }
         public void select()
         {
+            int scalee = scale/2;
             int x = 0;
             int y = 0;
             while (true)
             {
                 Console.CursorVisible = false;
-                Console.Clear();
-                draw(x, y);
+                drawboard(scalee,x,y);
                 var command = Console.ReadKey().Key;
                 switch (command)
                 {
@@ -169,118 +169,86 @@ namespace ChessTry2
                         }
                         break;
                     case ConsoleKey.Enter:
-                        movethepiece(x,y);
+                        movethepiece(x, y, scalee);
                         break;
                 }
             }
           
-            void draw(int a, int b)
-            {
-                foreach (Cell c in Cells)
-                {
-                    string symb = "▀";
-                    Console.SetCursorPosition(c.Coordinates.x * scale, c.Coordinates.y * scale / 2);
-                    for (int x = 0; x <= scale / 2; x++)
-                    {
-                        Console.ForegroundColor = ConsoleColor.White;
-                        if(c.Coordinates.x == a && c.Coordinates.y == b)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                        }
-                        else if(c.Coordinates.x == a && c.Coordinates.y - 1 == b)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                        }
-                        else if(c.Coordinates.x - 1 == a && c.Coordinates.y == b && x == 0)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                        }
-                        else if (c.Coordinates.x - 1 == a && c.Coordinates.y - 1 == b && x == 0)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                        }
-                        Console.Write(symb);
-                        Console.Write(" ");
-                    }
-                 
-                    for (int y = 1; y <= scale / 2 ; y++)
-                    {
-                        Console.ForegroundColor = ConsoleColor.White;
-                        if (c.Coordinates.x == a && c.Coordinates.y == b)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.SetCursorPosition(c.Coordinates.x * scale, c.Coordinates.y * scale / 2 + y);
-                            Console.Write(symb);
-                            Console.ForegroundColor = ConsoleColor.White;
-                        }
-                        else if(c.Coordinates.x - 1 == a && c.Coordinates.y == b)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.SetCursorPosition(c.Coordinates.x * scale, c.Coordinates.y * scale / 2 + y);
-                            Console.Write(symb);
-                            Console.ForegroundColor = ConsoleColor.White;
-                        }
-                        else
-                        {
-                            Console.SetCursorPosition(c.Coordinates.x * scale, c.Coordinates.y * scale / 2 + y);
-                            Console.Write(symb);
-                        }
-                    }
-                    if (c.Coordinates.x == 7)
-                    {
-                        for (int x = 1; x <= scale / 2; x++)
-                        {
-                            if (c.Coordinates.x == a && c.Coordinates.y == b)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                            }
-                            Console.SetCursorPosition((c.Coordinates.x + 1) * scale, c.Coordinates.y * scale / 2 + x);
-                            Console.Write(symb);
-                        }
-                        Console.ForegroundColor = ConsoleColor.White;
-                    }
-                    if (c.Coordinates.y == 7)
-                    {
-                        
-                        Console.SetCursorPosition(c.Coordinates.x * scale, (c.Coordinates.y + 1) * scale / 2);
-                        for (int x = 0 ; x <= scale / 2; x++)
-                        {
-                            Console.ForegroundColor = ConsoleColor.White;
-                            if (c.Coordinates.x == a && c.Coordinates.y == b)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                            }
-                            else if (c.Coordinates.x - 1 == a && c.Coordinates.y == b && x == 0) 
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                            } 
-                            Console.Write(symb);
-                            Console.Write(" ");
-                        }
-     
-                    }
-                }
-                foreach (Piece p in WhitePieces)
-                {
-
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.SetCursorPosition(p.Coordinates.x * scale + scale / 2, p.Coordinates.y * scale / 2 + scale / 4);
-                        Console.Write(p.name);
-                        Console.ForegroundColor = ConsoleColor.White;
-                }
-                foreach (Piece p in BlackPieces)
-                {      
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.SetCursorPosition(p.Coordinates.x * scale + scale / 2, p.Coordinates.y * scale / 2 + scale / 4);
-                        Console.Write(p.name);
-                        Console.ForegroundColor = ConsoleColor.White;
-                }
-                Console.SetCursorPosition(100, 0);
-                Console.WriteLine(a + " " + b);
-            }
             
         }
-        public void movethepiece(int x, int y)
+        public void drawboard(int scale, int a, int b)
+        {
+
+                string symb = " ";
+                for (int x = 0; x < 8; x++)
+                {
+                    for (int y = 0; y < 8; y++)
+                    {
+                        for (int i = 0; i < scale; i++)
+                        {
+                            Console.SetCursorPosition(y * scale * 2, i + x * scale);
+                            for (int j = 0; j < scale; j++)
+                            {
+                                if(a == y && b == x)
+                                {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.BackgroundColor = ConsoleColor.Red;
+                                }
+                            else
+                            {
+                                if (y % 2 == 0)
+                                {
+                                    if (x % 2 == 0)
+                                    {
+                                        Console.BackgroundColor = ConsoleColor.White;
+                                        Console.ForegroundColor = ConsoleColor.White;
+                                    }
+                                    else
+                                    {
+                                        Console.BackgroundColor = ConsoleColor.DarkCyan;
+                                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                    }
+                                }
+                                else
+                                {
+                                    if (x % 2 == 1)
+                                    {
+                                        Console.BackgroundColor = ConsoleColor.White;
+                                        Console.ForegroundColor = ConsoleColor.White;
+                                    }
+                                    else
+                                    {
+                                        Console.BackgroundColor = ConsoleColor.DarkCyan;
+                                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                                    }
+                                }
+                            }
+                                Console.Write(symb + " ");
+                                Console.BackgroundColor = ConsoleColor.Black;
+                            }
+                        }
+                    }
+                }
+            foreach (Piece p in WhitePieces)
+            {
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.SetCursorPosition(p.Coordinates.x * scale*2 + scale  , p.Coordinates.y * scale + scale / 2 );
+                Console.Write(p.name);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            foreach (Piece p in BlackPieces)
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.SetCursorPosition(p.Coordinates.x * scale*2 + scale , p.Coordinates.y * scale + scale / 2 );
+                Console.Write(p.name);
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            Console.SetCursorPosition(this.scale*8 + 1, 0);
+            Console.WriteLine(a + " " + b);
+
+        }
+        public void movethepiece(int x, int y, int scalee)
         {
             string name = "";
             Coordinates c = new Coordinates();
@@ -319,23 +287,24 @@ namespace ChessTry2
                 {
                     foreach (Coordinates move in legalmoves)
                     {
-                        Console.SetCursorPosition(100, index + 1);
+                        Console.SetCursorPosition(scale*8 + 1, index + 1);
                         Console.WriteLine("Available Move [" + index + "]" + move.x + "," + move.y);
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.SetCursorPosition(move.x * scale + scale / 3 + 1, move.y * scale / 2 + scale / 5);
+                        Console.SetCursorPosition((move.x * scale + scale / 3 + 1)-2, move.y * scale / 2 + scale / 5);
                         Console.Write("{"+index+"}");
                         Console.ForegroundColor = ConsoleColor.White;
                         index++;
                     }
-                    Console.SetCursorPosition(100, index + 2);
+                    Console.SetCursorPosition(scale*8 + 1, index + 2);
                     Console.WriteLine("Select the INDEX to move the PIECE, 0 to exit");
                     int select = int.Parse(Console.ReadLine());
                     if (select == 0)
                     {
-
+                        Console.Clear();
                     }
                     else
                     {
+                        Console.Clear();
                         if(modulo == 0)
                         {
                             foreach (Piece wp in WhitePieces)
@@ -378,16 +347,20 @@ namespace ChessTry2
                 }
                 else
                 {
-                    Console.SetCursorPosition(100, index + 2);
+                    drawboard(scalee, x, y);
+                    Console.SetCursorPosition(scale * 8 + 1, index + 2);
                     Console.WriteLine("No move available haha lol");
                     Console.ReadKey();
+                    Console.Clear();
                 }
             }
             else
             {
-                Console.SetCursorPosition(100, 3);
+                drawboard(scalee, x, y);
+                Console.SetCursorPosition(this.scale * 8 + 1, 3);
                 Console.WriteLine("ITS NOT YOUR PIECE, DUMB FUCK!");
                 Console.ReadKey();
+                Console.Clear();
             }
         }
     }
