@@ -13,7 +13,8 @@ namespace ChessTry2
         public List<Cell> Cells { get; set; }
         public Piece p { get; set; }
         public int scale { get; set; }
-        public int movecounter { get; set; }
+        public int movecounter { get; set; } = 0;
+        public int changecounter { get; set; } = 0;
         public ConsoleColor primary { get; set; }
         public ConsoleColor secondary { get; set; }
         public Board(int scale, ConsoleColor primary, ConsoleColor secondary)
@@ -120,11 +121,12 @@ namespace ChessTry2
                 }
             }
         }
-        public void select()
+        public void start()
         {
             int scalee = scale / 2;
             int x = 0;
             int y = 0;
+            drawboard(scalee, x, y);
             while (true)
             {
                 Console.CursorVisible = false;
@@ -235,12 +237,12 @@ namespace ChessTry2
             {
 
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.BackgroundColor= determinebackground(p.Coordinates.x, p.Coordinates.y);
-                if(p.Coordinates.x == a && p.Coordinates.y == b)
+                Console.BackgroundColor = determinebackground(p.Coordinates.x, p.Coordinates.y);
+                if (p.Coordinates.x == a && p.Coordinates.y == b)
                 {
                     Console.BackgroundColor = ConsoleColor.Red;
                 }
-                drawpiece(p.Coordinates.x, p.Coordinates.y, scale * 2, p.name);
+                drawpiece(p.Coordinates.x, p.Coordinates.y, this.scale, p.name);
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.BackgroundColor = ConsoleColor.Black;
             }
@@ -252,13 +254,12 @@ namespace ChessTry2
                 {
                     Console.BackgroundColor = ConsoleColor.Red;
                 }
-                drawpiece(p.Coordinates.x, p.Coordinates.y, scale * 2, p.name);
+                drawpiece(p.Coordinates.x, p.Coordinates.y, this.scale, p.name);
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.BackgroundColor = ConsoleColor.Black;
             }
             Console.SetCursorPosition(this.scale * 8 + 1, 0);
             Console.WriteLine(a + " " + b);
-
         }
         public void movethepiece(int x, int y, int scalee)
         {
@@ -395,17 +396,17 @@ namespace ChessTry2
                         }
                         if (i == 2)
                         {
-                            xmove = 3;
+                            xmove = 1;
                         }
-                        if (i == 3)
+                        if(i == 3)
                         {
                             xmove = 1;
                         }
-                        string pawn1 = "▄▄";
+                        string pawn1 =  "▄▄";
                         string pawn2 = "████";
-                        string pawn3 = "██";
-                        string pawn4 = "▄████▄";
-                        string[] pawn = { pawn1, pawn2, pawn3, pawn4 };
+                        string pawn3 ="▄▄██▄▄";
+                        string pawn4 ="▀▀▀▀▀▀"; 	
+                        string[] pawn = { pawn1, pawn2, pawn3, pawn4};
                         Console.SetCursorPosition((x * scaleee) + xmove, (y * scaleee / 2) + i);
                         Console.Write(pawn[i]);
                     }
@@ -430,10 +431,10 @@ namespace ChessTry2
                         {
                             xmove = 1;
                         }
-                        string knight1 = "█▄▄█";
-                        string knight2 = "▄████▀";
-                        string knight3 = "██";
-                        string knight4 = "▄████▄";
+                        string knight1 =    "▄  ▄";
+                        string knight2 =  "▄████▀";
+                        string knight3 =    "██";
+                        string knight4 =  "▀▀▀▀▀▀";
                         string[] knight = { knight1, knight2, knight3, knight4 };
                         Console.SetCursorPosition((x * scaleee) + xmove, (y * scaleee / 2) + i);
                         Console.Write(knight[i]);
@@ -445,11 +446,11 @@ namespace ChessTry2
                         int xmove = 0;
                         if (i == 0)
                         {
-                            xmove = 1;
+                            xmove = 3;
                         }
                         if (i == 1)
                         {
-                            xmove = 3;
+                            xmove = 1;
                         }
                         if (i == 2)
                         {
@@ -459,10 +460,10 @@ namespace ChessTry2
                         {
                             xmove = 1;
                         }
-                        string bishop1 = "▄▄██▄▄";
-                        string bishop2 = "██";
-                        string bishop3 = "██";
-                        string bishop4 = "▄████▄";
+                        string bishop1 =   "▄▄";
+                        string bishop2 = "▀▀██▀▀";
+                        string bishop3 =   "██";
+                        string bishop4 = "▀▀▀▀▀▀";
                         string[] bishop = { bishop1, bishop2, bishop3, bishop4 };
                         Console.SetCursorPosition((x * scaleee) + xmove, (y * scaleee / 2) + i);
                         Console.Write(bishop[i]);
@@ -478,7 +479,7 @@ namespace ChessTry2
                         }
                         if (i == 1)
                         {
-                            xmove = 2;
+                            xmove = 1;
                         }
                         if (i == 2)
                         {
@@ -488,10 +489,10 @@ namespace ChessTry2
                         {
                             xmove = 1;
                         }
-                        string rook1 = "█▄▄▄▄█";
-                        string rook2 = "████";
+                        string rook1 ="▄    ▄";
+                        string rook2 ="▀████▀";
                         string rook3 = "████";
-                        string rook4 = "▄████▄";
+                        string rook4 ="▀▀▀▀▀▀";
                         string[] rook = { rook1, rook2, rook3, rook4 };
                         Console.SetCursorPosition((x * scaleee) + xmove, (y * scaleee / 2) + i);
                         Console.Write(rook[i]);
@@ -503,7 +504,7 @@ namespace ChessTry2
                         int xmove = 0;
                         if (i == 0)
                         {
-                            xmove = 0;
+                            xmove = 1;
                         }
                         if (i == 1)
                         {
@@ -515,12 +516,12 @@ namespace ChessTry2
                         }
                         if (i == 3)
                         {
-                            xmove = 0;
+                            xmove = 1;
                         }
-                        string queen1 = "█▄█▄▄█▄█";
+                        string queen1 = "▄ ▄▄ ▄";
                         string queen2 = "▄████▄";
                         string queen3 = "▀████▀";
-                        string queen4 = "▄▄████▄▄";
+                        string queen4 = "▀▀▀▀▀▀";
                         string[] queen = { queen1, queen2, queen3, queen4 };
                         Console.SetCursorPosition((x * scaleee) + xmove, (y * scaleee / 2) + i);
                         Console.Write(queen[i]);
@@ -532,7 +533,7 @@ namespace ChessTry2
                         int xmove = 0;
                         if (i == 0)
                         {
-                            xmove = 1;
+                            xmove = 3;
                         }
                         if (i == 1)
                         {
@@ -540,16 +541,16 @@ namespace ChessTry2
                         }
                         if (i == 2)
                         {
-                            xmove = 0;
+                            xmove = 1;
                         }
                         if (i == 3)
                         {
-                            xmove = 0;
+                            xmove = 1;
                         }
-                        string king1 = "▀▀██▀▀";
+                        string king1 =    "▄▄";
                         string king2 = "▀▄████▄▀";
-                        string king3 = "▄▀████▀▄";
-                        string king4 = "▄▄████▄▄";
+                        string king3 =  "▀████▀";
+                        string king4 =  "▀▀▀▀▀▀";
                         string[] king = { king1, king2, king3, king4 };
                         Console.SetCursorPosition((x * scaleee) + xmove, (y * scaleee / 2) + i);
                         Console.Write(king[i]);
