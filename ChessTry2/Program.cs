@@ -8,10 +8,8 @@ namespace ChessTry2
         static void Main(string[] args)
         {
             int scale = 8;
-            Board board = new Board(scale);
+            Board board = new Board(scale, ConsoleColor.White, ConsoleColor.Blue);
             board.select();
-          
-
         }
     }
 }

@@ -21,7 +21,6 @@ namespace ChessTry2
             this.Coordinates = Coordinates;
             this.color = color;
         }
-
         public List<Coordinates> move(string piece, Coordinates c, List<Piece> wp, List<Piece> bp, int movecounter, int color)
         {
             switch (piece)
@@ -551,7 +550,7 @@ namespace ChessTry2
         }
 
 
-
+        
 
 
 
@@ -957,5 +956,6 @@ namespace ChessTry2
             return null;
         }
 
+      
     }
 }
