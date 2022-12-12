@@ -948,7 +948,394 @@ namespace ChessTry2
         }
         public List<Coordinates> queen(Coordinates c, List<Piece> wp, List<Piece> bp, int color)
         {
-            return null;
+            List<Coordinates> moves = legalmovesperpendicular(color);
+            List<Coordinates> diagonalmoves = legalmovesdiagonal(color);
+            foreach(Coordinates dc in diagonalmoves)
+            {
+                moves.Add(dc);
+            }
+            List<Coordinates> legalmovesdiagonal(int colorr)
+            {
+                bool rd = true;
+                bool ru = true;
+                bool ld = true;
+                bool lu = true;
+                List<Coordinates> movess = new List<Coordinates>();
+                for (int j = 0; j < 8; j++)
+                {
+                    Coordinates leftdown = new Coordinates(c.x - j, c.y + j);
+                    Coordinates rightdown = new Coordinates(c.x + j, c.y + j);
+                    Coordinates rightup = new Coordinates(c.x + j, c.y - j);
+                    Coordinates leftup = new Coordinates(c.x - j, c.y - j);
+
+                    if (rightdown.x >= 0 && rightdown.x <= 7 && rightdown.y >= 0 && rightdown.y <= 7 && rd == true && rightdown.x != c.x && rightdown.y != c.y)
+                    {
+                        foreach (Piece piece in wp)
+                        {
+                            switch (color)
+                            {
+                                case 0:
+                                    if (rightdown.x == piece.Coordinates.x && rightdown.y == piece.Coordinates.y)
+                                    {
+                                        rd = false;
+                                    }
+                                    break;
+                                case 1:
+                                    if (rightdown.x == piece.Coordinates.x + 1 && rightdown.y == piece.Coordinates.y + 1)
+                                    {
+                                        rd = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        foreach (Piece piece1 in bp)
+                        {
+                            switch (color)
+                            {
+                                case 1:
+                                    if (rightdown.x == piece1.Coordinates.x && rightdown.y == piece1.Coordinates.y)
+                                    {
+                                        rd = false;
+                                    }
+                                    break;
+                                case 0:
+                                    if (rightdown.x == piece1.Coordinates.x + 1 && rightdown.y == piece1.Coordinates.y + 1)
+                                    {
+                                        rd = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        if (rd != false)
+                        {
+                            movess.Add(rightdown);
+                        }
+                    }
+                    if (rightup.x >= 0 && rightup.x <= 7 && rightup.y >= 0 && rightup.y <= 7 && ru == true && rightup.x != c.x && rightup.y != c.y)
+                    {
+                        foreach (Piece piece in wp)
+                        {
+                            switch (color)
+                            {
+                                case 0:
+                                    if (rightup.x == piece.Coordinates.x && rightup.y == piece.Coordinates.y)
+                                    {
+                                        ru = false;
+                                    }
+                                    break;
+                                case 1:
+                                    if (rightup.x == piece.Coordinates.x + 1 && rightup.y == piece.Coordinates.y - 1)
+                                    {
+                                        ru = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        foreach (Piece piece1 in bp)
+                        {
+                            switch (color)
+                            {
+                                case 1:
+                                    if (rightup.x == piece1.Coordinates.x && rightup.y == piece1.Coordinates.y)
+                                    {
+                                        ru = false;
+                                    }
+                                    break;
+                                case 0:
+                                    if (rightup.x == piece1.Coordinates.x + 1 && rightup.y == piece1.Coordinates.y - 1)
+                                    {
+                                        ru = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        if (ru != false)
+                        {
+                            movess.Add(rightup);
+                        }
+                    }
+                    if (leftup.x >= 0 && leftup.x <= 7 && leftup.y >= 0 && leftup.y <= 7 && lu == true && leftup.x != c.x && leftup.y != c.y)
+                    {
+                        foreach (Piece piece in wp)
+                        {
+                            switch (color)
+                            {
+                                case 0:
+                                    if (leftup.x == piece.Coordinates.x && leftup.y == piece.Coordinates.y)
+                                    {
+                                        lu = false;
+                                    }
+                                    break;
+                                case 1:
+                                    {
+                                        if (leftup.x == piece.Coordinates.x - 1 && leftup.y == piece.Coordinates.y - 1)
+                                        {
+                                            lu = false;
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        foreach (Piece piece1 in bp)
+                        {
+                            switch (color)
+                            {
+                                case 1:
+                                    if (leftup.x == piece1.Coordinates.x && leftup.y == piece1.Coordinates.y)
+                                    {
+                                        lu = false;
+                                    }
+                                    break;
+                                case 0:
+                                    {
+                                        if (leftup.x == piece1.Coordinates.x - 1 && leftup.y == piece1.Coordinates.y - 1)
+                                        {
+                                            lu = false;
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        if (lu != false)
+                        {
+                            movess.Add(leftup);
+                        }
+                    }
+                    if (leftdown.x >= 0 && leftdown.x <= 7 && leftdown.y >= 0 && leftdown.y <= 7 && ld == true && leftdown.x != c.x && leftdown.y != c.y)
+                    {
+                        foreach (Piece piece in wp)
+                        {
+                            switch (color)
+                            {
+                                case 0:
+                                    if (leftdown.x == piece.Coordinates.x && leftdown.y == piece.Coordinates.y)
+                                    {
+                                        ld = false;
+                                    }
+                                    break;
+                                case 1:
+                                    if (leftdown.x == piece.Coordinates.x - 1 && leftdown.y == piece.Coordinates.y + 1)
+                                    {
+                                        ld = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        foreach (Piece piece1 in bp)
+                        {
+                            switch (color)
+                            {
+                                case 1:
+                                    if (leftdown.x == piece1.Coordinates.x && leftdown.y == piece1.Coordinates.y)
+                                    {
+                                        ld = false;
+                                    }
+                                    break;
+                                case 0:
+                                    if (leftdown.x == piece1.Coordinates.x - 1 && leftdown.y == piece1.Coordinates.y + 1)
+                                    {
+                                        ld = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        if (ld != false)
+                        {
+                            movess.Add(leftdown);
+                        }
+                    }
+                }
+                return movess;
+            }
+            List<Coordinates> legalmovesperpendicular(int colorr)
+            {
+                List<Coordinates> movess = new List<Coordinates>();
+                bool u = true;
+                bool d = true;
+                bool l = true;
+                bool r = true;
+                for (int i = 0; i < 8; i++)
+                {
+                    Coordinates up = new Coordinates(c.x, c.y - i);
+                    Coordinates down = new Coordinates(c.x, c.y + i);
+                    Coordinates left = new Coordinates(c.x - i, c.y);
+                    Coordinates right = new Coordinates(c.x + i, c.y);
+                    if (up.y >= 0 && u == true && up.y != c.y)
+                    {
+                        foreach (Piece wpc in wp)
+                        {
+                            switch (colorr)
+                            {
+                                case 0:
+                                    if (wpc.Coordinates.x == up.x && wpc.Coordinates.y == up.y)
+                                    {
+                                        u = false;
+                                    }
+                                    break;
+                                case 1:
+                                    if (wpc.Coordinates.x == up.x && wpc.Coordinates.y - 1 == up.y)
+                                    {
+                                        u = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        foreach (Piece bpc in bp)
+                        {
+                            switch (colorr)
+                            {
+                                case 1:
+                                    if (bpc.Coordinates.x == up.x && bpc.Coordinates.y == up.y)
+                                    {
+                                        u = false;
+                                    }
+                                    break;
+                                case 0:
+                                    if (bpc.Coordinates.x == up.x && bpc.Coordinates.y - 1 == up.y)
+                                    {
+                                        u = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        if (u != false)
+                        {
+                            movess.Add(up);
+                        }
+                    }
+                    if (d == true && down.y <= 7 && down.y != c.y)
+                    {
+                        foreach (Piece wpc in wp)
+                        {
+                            switch (colorr)
+                            {
+                                case 0:
+                                    if (wpc.Coordinates.x == down.x && wpc.Coordinates.y == down.y)
+                                    {
+                                        d = false;
+                                    }
+                                    break;
+                                case 1:
+                                    if (wpc.Coordinates.x == down.x && wpc.Coordinates.y + 1 == down.y)
+                                    {
+                                        d = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        foreach (Piece bpc in bp)
+                        {
+                            switch (colorr)
+                            {
+                                case 1:
+                                    if (bpc.Coordinates.x == down.x && bpc.Coordinates.y == down.y)
+                                    {
+                                        d = false;
+                                    }
+                                    break;
+                                case 0:
+                                    if (bpc.Coordinates.x == down.x && bpc.Coordinates.y + 1 == down.y)
+                                    {
+                                        d = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        if (d != false)
+                        {
+                            movess.Add(down);
+                        }
+                    }
+                    if (l == true && left.x >= 0 && left.x != c.x)
+                    {
+                        foreach (Piece wpc in wp)
+                        {
+                            switch (colorr)
+                            {
+                                case 0:
+                                    if (wpc.Coordinates.x == left.x && wpc.Coordinates.y == left.y)
+                                    {
+                                        l = false;
+                                    }
+                                    break;
+                                case 1:
+                                    if (wpc.Coordinates.x - 1 == left.x && wpc.Coordinates.y == left.y)
+                                    {
+                                        l = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        foreach (Piece bpc in bp)
+                        {
+                            switch (colorr)
+                            {
+                                case 1:
+                                    if (bpc.Coordinates.x == left.x && bpc.Coordinates.y == left.y)
+                                    {
+                                        l = false;
+                                    }
+                                    break;
+                                case 0:
+                                    if (bpc.Coordinates.x - 1 == left.x && bpc.Coordinates.y == left.y)
+                                    {
+                                        l = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        if (l != false)
+                        {
+                            movess.Add(left);
+                        }
+                    }
+                    if (r == true && right.x <= 7 && right.x != c.x)
+                    {
+                        foreach (Piece wpc in wp)
+                        {
+                            switch (colorr)
+                            {
+                                case 0:
+                                    if (wpc.Coordinates.x == right.x && wpc.Coordinates.y == right.y)
+                                    {
+                                        r = false;
+                                    }
+                                    break;
+                                case 1:
+                                    if (wpc.Coordinates.x + 1 == right.x && wpc.Coordinates.y == right.y)
+                                    {
+                                        r = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        foreach (Piece bpc in bp)
+                        {
+                            switch (colorr)
+                            {
+                                case 1:
+                                    if (bpc.Coordinates.x == right.x && bpc.Coordinates.y == right.y)
+                                    {
+                                        r = false;
+                                    }
+                                    break;
+                                case 0:
+                                    if (bpc.Coordinates.x + 1 == right.x && bpc.Coordinates.y == right.y)
+                                    {
+                                        r = false;
+                                    }
+                                    break;
+                            }
+                        }
+                        if (r != false)
+                        {
+                            movess.Add(right);
+                        }
+                    }
+                }
+                return movess;
+            }
+            return moves;
         }
      
         public List<Coordinates> king(Coordinates c, List<Piece> wp, List<Piece> bp, int color)
