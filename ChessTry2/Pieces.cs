@@ -948,6 +948,7 @@ namespace ChessTry2
         }
         public List<Coordinates> queen(Coordinates c, List<Piece> wp, List<Piece> bp, int color)
         {
+
             return null;
         }
      
