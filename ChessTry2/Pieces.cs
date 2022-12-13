@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
@@ -248,13 +249,6 @@ namespace ChessTry2
                 {
                     moves.Add(dcoordinate);
                 }
-                for (int i = 0; i < moves.Count; i++)
-                {
-                    if (moves[i].x > 7 || moves[i].y > 7 || moves[i].x < 0 || moves[i].y < 0)
-                    {
-                        moves.RemoveAt(i);
-                    }
-                }
                 List<Coordinates> lmoves()
                 {
                     List<Coordinates> moves = new List<Coordinates>();
@@ -264,11 +258,11 @@ namespace ChessTry2
                     {
                         foreach (Piece piece in wp)
                         {
-                            if (c.x - 2 == piece.Coordinates.x && c.y - 1 == piece.Coordinates.y)
+                            if (c.x - 2 == piece.Coordinates.x && c.y - 1 == piece.Coordinates.y || c.y - 1 < 0)
                             {
                                 up = false;
                             }
-                            if (c.x - 2 == piece.Coordinates.x && c.y + 1 == piece.Coordinates.y)
+                            if (c.x - 2 == piece.Coordinates.x && c.y + 1 == piece.Coordinates.y || c.y + 1 > 7)
                             {
                                 down = false;
                             }
@@ -286,7 +280,6 @@ namespace ChessTry2
                     }
                     return moves;
                 }
-
                 List<Coordinates> rmoves()
                 {
                     List<Coordinates> moves = new List<Coordinates>();
@@ -296,11 +289,11 @@ namespace ChessTry2
                     {
                         foreach (Piece piece in wp)
                         {
-                            if (c.x + 2 == piece.Coordinates.x && c.y - 1 == piece.Coordinates.y)
+                            if (c.x + 2 == piece.Coordinates.x && c.y - 1 == piece.Coordinates.y || c.y - 1 < 0)
                             {
                                 up = false;
                             }
-                            if (c.x + 2 == piece.Coordinates.x && c.y + 1 == piece.Coordinates.y)
+                            if (c.x + 2 == piece.Coordinates.x && c.y + 1 == piece.Coordinates.y || c.y + 1 > 7)
                             {
                                 down = false;
                             }
@@ -328,11 +321,11 @@ namespace ChessTry2
                     {
                         foreach (Piece piece in wp)
                         {
-                            if (c.y - 2 == piece.Coordinates.y && c.x + 1 == piece.Coordinates.x)
+                            if (c.y - 2 == piece.Coordinates.y && c.x + 1 == piece.Coordinates.x || c.x + 1 > 7)
                             {
                                 right = false;
                             }
-                            if (c.y - 2 == piece.Coordinates.y && c.x - 1 == piece.Coordinates.x)
+                            if (c.y - 2 == piece.Coordinates.y && c.x - 1 == piece.Coordinates.x || c.x - 1 < 0)
                             {
                                 left = false;
                             }
@@ -360,14 +353,14 @@ namespace ChessTry2
                     {
                         foreach (Piece piece in wp)
                         {
-                            if (c.y + 2 == piece.Coordinates.y && c.x + 1 == piece.Coordinates.x)
+                            if (c.y + 2 == piece.Coordinates.y && c.x + 1 == piece.Coordinates.x || c.x + 1 > 7)
                             {
                                 right = false;
                             }
                         }
                         foreach (Piece piece in wp)
                         {
-                            if (c.y + 2 == piece.Coordinates.y && c.x - 1 == piece.Coordinates.x)
+                            if (c.y + 2 == piece.Coordinates.y && c.x - 1 == piece.Coordinates.x || c.x - 1 < 0)
                             {
                                 left = false;
                             }
@@ -410,13 +403,6 @@ namespace ChessTry2
                 {
                     moves.Add(dcoordinate);
                 }
-                for (int i = 0; i < moves.Count; i++)
-                {
-                    if (moves[i].x > 7 || moves[i].y > 7 || moves[i].x < 0 || moves[i].y < 0)
-                    {
-                        moves.RemoveAt(i);
-                    }
-                }
                 List<Coordinates> lmoves()
                 {
                     List<Coordinates> moves = new List<Coordinates>();
@@ -426,11 +412,11 @@ namespace ChessTry2
                     {
                         foreach (Piece piece in bp)
                         {
-                            if (c.x - 2 == piece.Coordinates.x && c.y - 1 == piece.Coordinates.y)
+                            if (c.x - 2 == piece.Coordinates.x && c.y - 1 == piece.Coordinates.y || c.y - 1 < 0)
                             {
                                 up = false;
                             }
-                            if (c.x - 2 == piece.Coordinates.x && c.y + 1 == piece.Coordinates.y)
+                            if (c.x - 2 == piece.Coordinates.x && c.y + 1 == piece.Coordinates.y || c.y + 1 > 7)
                             {
                                 down = false;
                             }
@@ -458,11 +444,11 @@ namespace ChessTry2
                     {
                         foreach (Piece piece in bp)
                         {
-                            if (c.x + 2 == piece.Coordinates.x && c.y - 1 == piece.Coordinates.y)
+                            if (c.x + 2 == piece.Coordinates.x && c.y - 1 == piece.Coordinates.y || c.y - 1 < 0)
                             {
                                 up = false;
                             }
-                            if (c.x + 2 == piece.Coordinates.x && c.y + 1 == piece.Coordinates.y)
+                            if (c.x + 2 == piece.Coordinates.x && c.y + 1 == piece.Coordinates.y || c.y + 1 > 7)
                             {
                                 down = false;
                             }
@@ -490,11 +476,11 @@ namespace ChessTry2
                     {
                         foreach (Piece piece in bp)
                         {
-                            if (c.y - 2 == piece.Coordinates.y && c.x + 1 == piece.Coordinates.x)
+                            if (c.y - 2 == piece.Coordinates.y && c.x + 1 == piece.Coordinates.x || c.x + 1 > 7)
                             {
                                 right = false;
                             }
-                            if (c.y - 2 == piece.Coordinates.y && c.x - 1 == piece.Coordinates.x)
+                            if (c.y - 2 == piece.Coordinates.y && c.x - 1 == piece.Coordinates.x || c.x - 1 < 0)
                             {
                                 left = false;
                             }
@@ -522,11 +508,11 @@ namespace ChessTry2
                     {
                         foreach (Piece piece in bp)
                         {
-                            if (c.y + 2 == piece.Coordinates.y && c.x + 1 == piece.Coordinates.x)
+                            if (c.y + 2 == piece.Coordinates.y && c.x + 1 == piece.Coordinates.x || c.x + 1 > 7)
                             {
                                 right = false;
                             }
-                            if (c.y + 2 == piece.Coordinates.y && c.x - 1 == piece.Coordinates.x)
+                            if (c.y + 2 == piece.Coordinates.y && c.x - 1 == piece.Coordinates.x || c.x - 1 < 0)
                             {
                                 left = false;
                             }
@@ -1340,7 +1326,181 @@ namespace ChessTry2
      
         public List<Coordinates> king(Coordinates c, List<Piece> wp, List<Piece> bp, int color)
         {
-            return null;
+            List<Coordinates> moves = new List<Coordinates>();
+            List<Coordinates> unorginal = new List<Coordinates>();
+            Coordinates up = new Coordinates(c.x, c.y - 1); Coordinates down = new Coordinates(c.x, c.y + 1);
+            Coordinates right = new Coordinates(c.x + 1, c.y); Coordinates left = new Coordinates(c.x - 1, c.y);
+            Coordinates upright = new Coordinates(c.x + 1, c.y - 1); Coordinates downright = new Coordinates(c.x + 1, c.y + 1);
+            Coordinates leftdown = new Coordinates(c.x - 1, c.y + 1); Coordinates leftup = new Coordinates(c.x - 1, c.y - 1);
+            bool u=true; bool d=true; bool r=true; bool l = true; bool ur = true; bool dr = true; bool ld = true; bool lu = true; 
+            unorginal.Add(up); unorginal.Add(down); unorginal.Add(right); unorginal.Add(left); 
+            unorginal.Add(upright); unorginal.Add(downright); unorginal.Add(leftdown); unorginal.Add(leftup);
+            foreach(Coordinates move in unorginal)
+            {
+                if(color == 0)
+                {
+                    foreach (Piece piece in wp)
+                    {
+                        if (piece.Coordinates.x == move.x && piece.Coordinates.y == move.y)
+                        {
+                            if (c.x == move.x && c.y - 1 == move.y)
+                            {
+                                u = false;
+                            }
+                            else if (c.x == move.x && c.y + 1 == move.y)
+                            {
+                                d = false;
+                            }
+                            else if (c.x - 1 == move.x && c.y == move.y)
+                            {
+                                l = false;
+                            }
+                            else if (c.x + 1 == move.x && c.y == move.y)
+                            {
+                                r = false;
+                            }
+                            else if (c.x + 1 == move.x && c.y + 1 == move.y)
+                            {
+                                dr = false;
+                            }
+                            else if (c.x - 1 == move.x && c.y + 1 == move.y)
+                            {
+                                ld = false;
+                            }
+                            else if (c.x - 1 == move.x && c.y - 1 == move.y)
+                            {
+                                lu = false;
+                            }
+                            else if (c.x + 1 == move.x && c.y - 1 == move.y)
+                            {
+                                ur = false;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (Piece piece in bp)
+                    {
+                        if (piece.Coordinates.x == move.x && piece.Coordinates.y == move.y)
+                        {
+                            if (c.x == move.x && c.y - 1 == move.y)
+                            {
+                                u = false;
+                            }
+                            else if (c.x == move.x && c.y + 1 == move.y)
+                            {
+                                d = false;
+                            }
+                            else if (c.x - 1 == move.x && c.y == move.y)
+                            {
+                                l = false;
+                            }
+                            else if (c.x + 1 == move.x && c.y == move.y)
+                            {
+                                r = false;
+                            }
+                            else if (c.x + 1 == move.x && c.y + 1 == move.y)
+                            {
+                                dr = false;
+                            }
+                            else if (c.x - 1 == move.x && c.y + 1 == move.y)
+                            {
+                                ld = false;
+                            }
+                            else if (c.x - 1 == move.x && c.y - 1 == move.y)
+                            {
+                                lu = false;
+                            }
+                            else if (c.x + 1 == move.x && c.y - 1 == move.y)
+                            {
+                                ur = false;
+                            }
+                        }
+                    }
+                }
+            }
+            if (u == true)
+            {
+                if (up.x < 0 || up.y < 0 || up.x > 7 || up.y > 7)
+                {
+                }
+                else
+                {
+                    moves.Add(up);
+                }
+            }
+            if (d == true)
+            {
+                if (down.x < 0 || down.y < 0 || down.x > 7 || down.y > 7)
+                {
+                }
+                else
+                {
+                    moves.Add(down);
+                }
+            }
+            if (l == true)
+            {
+                if (left.x < 0 || left.y < 0 || left.x > 7 || left.y > 7)
+                {
+                }
+                else
+                {
+                    moves.Add(left);
+                }
+            }
+            if(r == true)
+            {
+                if (right.x < 0 || right.y < 0 || right.x > 7 || right.y > 7)
+                {
+                }
+                else
+                {
+                    moves.Add(right);
+                }
+            }
+            if (dr == true)
+            {
+                if (downright.x < 0 || downright.y < 0 || downright.x > 7 || downright.y > 7)
+                {
+                }
+                else
+                {
+                    moves.Add(downright);
+                }
+            }
+            if (ur == true)
+            {
+                if (upright.x < 0 || upright.y < 0 || upright.x > 7 || upright.y > 7)
+                {
+                }
+                else
+                {
+                    moves.Add(upright);
+                }
+            }
+            if (ld == true)
+            {
+                if (leftdown.x < 0 || leftdown.y < 0 || leftdown.x > 7 || leftdown.y > 7)
+                {
+                }
+                else
+                {
+                    moves.Add(leftdown);
+                }
+            }
+            if (lu == true)
+            {
+                if (leftup.x < 0 || leftup.y < 0 || leftup.x > 7 || leftup.y > 7)
+                {
+                }
+                else
+                {
+                    moves.Add(leftup);
+                }
+            }
+            return moves;
         }
 
       
