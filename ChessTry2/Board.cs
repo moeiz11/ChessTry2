@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
+using System.Xml;
 
 namespace ChessTry2
 {
@@ -12,11 +14,16 @@ namespace ChessTry2
         public List<Piece> BlackPieces { get; set; }
         public List<Cell> Cells { get; set; }
         public Piece p { get; set; }
+        public bool checkwhite = false;
+        public bool checkblack = false;
+        public Coordinates whiteking = new Coordinates(0,0);
+        public Coordinates blackking = new Coordinates(0, 0);
         public int scale { get; set; }
         public int movecounter { get; set; } = 0;
         public int changecounter { get; set; } = 0;
         public ConsoleColor primary { get; set; }
         public ConsoleColor secondary { get; set; }
+
         public Board(int scale, ConsoleColor primary, ConsoleColor secondary)
         {
             this.primary = primary;
@@ -121,6 +128,66 @@ namespace ChessTry2
                 }
             }
         }
+        public void setkingcoords()
+        {
+            foreach(Piece piece in BlackPieces)
+            {
+                if (piece.name == "K")
+                {
+                    blackking = piece.Coordinates;
+                }
+            }
+            foreach (Piece piece in WhitePieces)
+            {
+                if (piece.name == "K")
+                {
+                    whiteking = piece.Coordinates;
+                }
+            }
+        }
+        public void checkthreat()
+        {
+            if(movecounter%2 == 0)
+            {
+                int one = 0;
+                foreach (Piece piece in BlackPieces)
+                {
+                    List<Coordinates> nextmoves = piece.move(piece.name, piece.Coordinates, WhitePieces, BlackPieces, movecounter, piece.color);
+                    foreach (Coordinates c in nextmoves)
+                    {
+                        if (c.x == whiteking.x && c.y == whiteking.y)
+                        {
+                            one = 1;
+                            checkwhite = true;
+                        }
+                    }
+                }
+                if(one == 0)
+                {
+                    checkwhite = false;
+                }
+            }
+            else
+            {
+                int one = 0;
+                foreach (Piece piece in WhitePieces)
+                {
+                    List<Coordinates> nextmoves = piece.move(piece.name, piece.Coordinates, WhitePieces, BlackPieces, movecounter, piece.color);
+                    foreach (Coordinates c in nextmoves)
+                    {
+                        if (c.x == blackking.x && c.y == blackking.y)
+                        {
+                            one = 1;
+                            checkblack = true;
+                        }
+                    }
+                }
+                if (one == 0)
+                {
+                    checkblack = false;
+                }
+            }
+        }
         public void start()
         {
             int scalee = scale / 2;
@@ -131,6 +198,8 @@ namespace ChessTry2
             {
                 Console.CursorVisible = false;
                 drawboard(scalee, x, y);
+                setkingcoords();
+                checkthreat();
                 var command = Console.ReadKey().Key;
                 switch (command)
                 {
@@ -357,6 +426,7 @@ namespace ChessTry2
                             }
 
                         }
+                        promotionchecker(color, scalee,x,y);
                     }
 
                 }
@@ -554,6 +624,57 @@ namespace ChessTry2
                         string[] king = { king1, king2, king3, king4 };
                         Console.SetCursorPosition((x * scaleee) + xmove, (y * scaleee / 2) + i);
                         Console.Write(king[i]);
+                    }
+                    break;
+            }
+        }
+
+        public void promotionchecker(int color, int scle, int x, int y)
+        {
+            switch (color)
+            {
+                case 0:
+                    string[] figures = { "Q", "R", "H", "B" };
+                    string[] figuresdp = { "Queen", "Rook", "Knight", "Bishop" };
+                    foreach (Piece wp in WhitePieces)
+                    {
+
+                        if(wp.name == "P" && wp.Coordinates.y == 0)
+                        {
+                            drawboard(scle, x, y);
+                            Console.SetCursorPosition(scale * 8 + 1, 2);
+                            Console.WriteLine("YOUR PROMOTED!, select the corresponding index to transform the Piece.");
+                            for (int i = 0; i < figures.Length; i++)
+                            {
+                                Console.SetCursorPosition(scale * 8 + 1, i + 4);
+                                Console.WriteLine("{" + (i+1) + "}" + figuresdp[i]);
+                            }
+                            int choose = int.Parse(Console.ReadLine());
+                            wp.name = figures[choose - 1];
+                            Console.Clear();
+                        }
+                    }
+                    break;
+                case 1:
+                    string[] bfigures = { "Q", "R", "H", "B" };
+                    string[] bfiguresdp = { "Queen", "Rook", "Knight", "Bishop" };
+                    foreach (Piece bp in BlackPieces)
+                    {
+
+                        if (bp.name == "P" && bp.Coordinates.y == 7)
+                        {
+                            drawboard(scle, x, y);
+                            Console.SetCursorPosition(scale * 8 + 1, 2);
+                            Console.WriteLine("YOUR PROMOTED!, select the corresponding index to transform the Piece.");
+                            for (int i = 0; i < bfigures.Length; i++)
+                            {
+                                Console.SetCursorPosition(scale * 8 + 1, i + 4);
+                                Console.WriteLine("{" + (i + 1) + "}" + bfiguresdp[i]);
+                            }
+                            int choose = int.Parse(Console.ReadLine());
+                            bp.name = bfigures[choose - 1];
+                            Console.Clear();
+                        }
                     }
                     break;
             }
