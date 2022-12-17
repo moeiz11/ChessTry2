@@ -128,64 +128,101 @@ namespace ChessTry2
                 }
             }
         }
-        public void setkingcoords()
+        public Coordinates getkingcoords(int color, List<Piece> wp, List<Piece> bp)
         {
-            foreach(Piece piece in BlackPieces)
+            if (color == 0)
             {
-                if (piece.name == "K")
+                Coordinates coordinates = new Coordinates();
+                foreach (Piece piece in wp)
                 {
-                    blackking = piece.Coordinates;
+                    if (piece.name == "K")
+                    {
+                        whiteking = piece.Coordinates;
+                        coordinates = piece.Coordinates;
+                    }
                 }
+                return coordinates;
             }
-            foreach (Piece piece in WhitePieces)
+            else
             {
-                if (piece.name == "K")
+                Coordinates coordinates = new Coordinates();
+                foreach (Piece piece in bp)
                 {
-                    whiteking = piece.Coordinates;
+                    if (piece.name == "K")
+                    {
+                        blackking = piece.Coordinates;
+                        coordinates = piece.Coordinates;
+                    }
                 }
-            }
+                return coordinates;
+            }      
         }
-        public void checkthreat()
+        public bool checkthreat(List<Piece> wp, List<Piece> bp)
         {
-            if(movecounter%2 == 0)
+            bool one = false;
+            Coordinates whitek = getkingcoords(0,wp,bp);
+            Coordinates blackk = getkingcoords(1, wp, bp);
+            if (movecounter%2 == 0)
             {
-                int one = 0;
-                foreach (Piece piece in BlackPieces)
+                foreach (Piece piece in bp)
                 {
-                    List<Coordinates> nextmoves = piece.move(piece.name, piece.Coordinates, WhitePieces, BlackPieces, movecounter, piece.color);
+                    List<Coordinates> nextmoves = piece.move(piece.name, piece.Coordinates, wp, bp, movecounter, piece.color);
                     foreach (Coordinates c in nextmoves)
                     {
-                        if (c.x == whiteking.x && c.y == whiteking.y)
+                        if (c.x == whitek.x && c.y == whitek.y)
                         {
-                            one = 1;
+                            one = true;
                             checkwhite = true;
                         }
                     }
                 }
-                if(one == 0)
-                {
-                    checkwhite = false;
-                }
             }
             else
             {
-                int one = 0;
-                foreach (Piece piece in WhitePieces)
+                foreach (Piece piece in wp)
                 {
-                    List<Coordinates> nextmoves = piece.move(piece.name, piece.Coordinates, WhitePieces, BlackPieces, movecounter, piece.color);
+                    List<Coordinates> nextmoves = piece.move(piece.name, piece.Coordinates, wp, bp, movecounter, piece.color);
                     foreach (Coordinates c in nextmoves)
                     {
-                        if (c.x == blackking.x && c.y == blackking.y)
+                        if (c.x == blackk.x && c.y == blackk.y)
                         {
-                            one = 1;
+                            one = true;
                             checkblack = true;
                         }
                     }
                 }
-                if (one == 0)
+            }
+            return one;
+        }
+        public void checkmate()
+        {
+            List<Piece> whitepieces = WhitePieces;
+            bool check;
+            List<Piece> onlypossible = new List<Piece>();
+            foreach (Piece piece in whitepieces)
+            {
+                Coordinates original = new Coordinates();
+                List<Coordinates> uncheckingmoves = piece.move(piece.name, piece.Coordinates, whitepieces, BlackPieces, movecounter, piece.color);
+                foreach(Coordinates c in uncheckingmoves)
                 {
-                    checkblack = false;
+                    original = piece.Coordinates;
+                    piece.Coordinates = c;
+                    check = checkthreat(whitepieces, BlackPieces);
+                    if (check == false)
+                    {
+                        onlypossible.Add(piece);
+                    }
                 }
+                piece.Coordinates = original;   
+            }
+            int index = 0;
+            foreach(Piece p in onlypossible)
+            {
+                Console.SetCursorPosition((p.Coordinates.x * scale + scale / 3 + 1) - 2, p.Coordinates.y * scale / 2 + scale / 6);
+                Console.Write((index+1));
+                Console.SetCursorPosition(scale * 8 + 1, index);
+                Console.Write(p.name);
+                index++;
             }
         }
         public void start()
@@ -198,8 +235,11 @@ namespace ChessTry2
             {
                 Console.CursorVisible = false;
                 drawboard(scalee, x, y);
-                setkingcoords();
-                checkthreat();
+                //setkingcoords(WhitePieces,BlackPieces);
+                if (checkthreat(WhitePieces, BlackPieces))
+                {
+                    checkmate();
+                }
                 var command = Console.ReadKey().Key;
                 switch (command)
                 {
