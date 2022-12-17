@@ -16,19 +16,23 @@ namespace ChessTry2
         {
 
         }
+        public Piece(Coordinates c)
+        {
+            this.Coordinates = c;
+        }
         public Piece(string name, Coordinates Coordinates, int color)
         {
             this.name = name;
             this.Coordinates = Coordinates;
             this.color = color;
         }
-        public List<Coordinates> move(string piece, Coordinates c, List<Piece> wp, List<Piece> bp, int movecounter, int color)
+        public List<Coordinates> move(string piece, Coordinates c, List<Piece> wp, List<Piece> bp, int color)
         {
             switch (piece)
             {
                 case "P":
                     List<Coordinates> legalmovesp = new List<Coordinates>();
-                    legalmovesp = pawn(c,wp,bp, movecounter, color);
+                    legalmovesp = pawn(c,wp,bp, color );
                     return legalmovesp;
                     break;
                 case "K":
@@ -60,7 +64,7 @@ namespace ChessTry2
             return null;
         }
 
-        public List<Coordinates> pawn(Coordinates c, List<Piece> wp, List<Piece> bp,int movecounter, int color)
+        public List<Coordinates> pawn(Coordinates c, List<Piece> wp, List<Piece> bp, int color)
         {
             List<Coordinates> moves = legalmoves();
             for(int i = 0; i < moves.Count; i++)

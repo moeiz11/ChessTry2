@@ -5,9 +5,18 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Xml;
-
 namespace ChessTry2
 {
+    struct ec
+    {
+        public ec(Coordinates cpos, List<Coordinates> pmoves)
+        {
+            this.cpos = cpos;
+            this.pmoves = pmoves;
+        }
+        public Coordinates cpos { get; set; }
+        public List<Coordinates> pmoves { get; set; }
+    }
     internal class Board
     {
         public List<Piece> WhitePieces { get; set; }
@@ -157,73 +166,89 @@ namespace ChessTry2
                 return coordinates;
             }      
         }
-        public bool checkthreat(List<Piece> wp, List<Piece> bp)
+        public bool checkthreat(List<Piece> WhitePiecesList, List<Piece> BlackPiecesList)
         {
-            bool one = false;
-            Coordinates whitek = getkingcoords(0,wp,bp);
-            Coordinates blackk = getkingcoords(1, wp, bp);
-            if (movecounter%2 == 0)
+            List<Piece> wpl = WhitePiecesList;
+            List<Piece> bpl = BlackPiecesList;
+            Piece WhiteKing = new Piece(getkingcoords(0,wpl, bpl));
+            Piece BlackKing = new Piece(getkingcoords(1,wpl,bpl));  
+            if(movecounter%2 == 0)
             {
-                foreach (Piece piece in bp)
+               foreach(Piece bp in bpl)
                 {
-                    List<Coordinates> nextmoves = piece.move(piece.name, piece.Coordinates, wp, bp, movecounter, piece.color);
-                    foreach (Coordinates c in nextmoves)
+                    List<Coordinates> fmoves = bp.move(bp.name,bp.Coordinates,wpl,bpl,bp.color);
+                    foreach (Coordinates fmove in fmoves)
                     {
-                        if (c.x == whitek.x && c.y == whitek.y)
+                        if (fmove.x == WhiteKing.Coordinates.x && fmove.y == WhiteKing.Coordinates.y)
                         {
-                            one = true;
-                            checkwhite = true;
+                            return true;
                         }
                     }
                 }
             }
             else
             {
-                foreach (Piece piece in wp)
+                foreach(Piece wp in wpl)
                 {
-                    List<Coordinates> nextmoves = piece.move(piece.name, piece.Coordinates, wp, bp, movecounter, piece.color);
-                    foreach (Coordinates c in nextmoves)
+                    List<Coordinates> fmoves = wp.move(wp.name, wp.Coordinates, wpl, bpl, wp.color);
+                    foreach (Coordinates fmove in fmoves)
                     {
-                        if (c.x == blackk.x && c.y == blackk.y)
+                        if (fmove.x == BlackKing.Coordinates.x && fmove.y == BlackKing.Coordinates.y)
                         {
-                            one = true;
-                            checkblack = true;
+                            return true;
                         }
                     }
                 }
             }
-            return one;
+
+            return false;
         }
-        public void checkmate()
+        public List<ec> checkmate(List<Piece> WhitePiecesList, List<Piece> BlackPiecesList)
         {
-            List<Piece> whitepieces = WhitePieces;
-            bool check;
-            List<Piece> onlypossible = new List<Piece>();
-            foreach (Piece piece in whitepieces)
-            {
-                Coordinates original = new Coordinates();
-                List<Coordinates> uncheckingmoves = piece.move(piece.name, piece.Coordinates, whitepieces, BlackPieces, movecounter, piece.color);
-                foreach(Coordinates c in uncheckingmoves)
-                {
-                    original = piece.Coordinates;
-                    piece.Coordinates = c;
-                    check = checkthreat(whitepieces, BlackPieces);
-                    if (check == false)
+           List<Piece> wpl= WhitePiecesList;
+           List<Piece> bpl= BlackPiecesList;
+           List<ec> onlypossiblepieces = new List<ec>();
+           if(movecounter%2 == 0)
+           {
+               foreach(Piece wp in WhitePiecesList)
+               {
+                    List<Coordinates> fmoves = wp.move(wp.name, wp.Coordinates, wpl, bpl, wp.color);
+                    Coordinates cpos = wp.Coordinates;
+                    List<Coordinates> pmoves = new List<Coordinates>();
+                    foreach (Coordinates fmove in fmoves)
                     {
-                        onlypossible.Add(piece);
+                        wp.Coordinates = fmove;
+                        if (!checkthreat(wpl, bpl))
+                        {
+                            pmoves.Add(fmove);
+                        }
                     }
-                }
-                piece.Coordinates = original;   
-            }
-            int index = 0;
-            foreach(Piece p in onlypossible)
-            {
-                Console.SetCursorPosition((p.Coordinates.x * scale + scale / 3 + 1) - 2, p.Coordinates.y * scale / 2 + scale / 6);
-                Console.Write((index+1));
-                Console.SetCursorPosition(scale * 8 + 1, index);
-                Console.Write(p.name);
-                index++;
-            }
+                    ec p = new ec(cpos, pmoves);
+                    onlypossiblepieces.Add(p);
+                    wp.Coordinates = cpos;
+               }
+           }
+           else
+           {
+               foreach (Piece bp in BlackPiecesList)
+               {
+                   List<Coordinates> fmoves = bp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
+                   Coordinates cpos = bp.Coordinates;
+                   List<Coordinates> pmoves = new List<Coordinates>();
+                   foreach (Coordinates fmove in fmoves)
+                   {
+                       bp.Coordinates = fmove;
+                       if (!checkthreat(wpl, bpl))
+                       {
+                           pmoves.Add(fmove);
+                       }
+                   }
+                   ec p = new ec(cpos, pmoves);
+                   onlypossiblepieces.Add(p);
+                   bp.Coordinates = cpos;
+               }
+           }
+           return onlypossiblepieces;
         }
         public void start()
         {
@@ -234,11 +259,11 @@ namespace ChessTry2
             while (true)
             {
                 Console.CursorVisible = false;
+                bool check = false;
                 drawboard(scalee, x, y);
-                //setkingcoords(WhitePieces,BlackPieces);
                 if (checkthreat(WhitePieces, BlackPieces))
                 {
-                    checkmate();
+                    check = true;
                 }
                 var command = Console.ReadKey().Key;
                 switch (command)
@@ -284,8 +309,52 @@ namespace ChessTry2
                         }
                         break;
                     case ConsoleKey.Enter:
-                        movethepiece(x, y, scalee);
+                        if (check)
+                        {
+                            List<ec> legalmoves = checkmate(WhitePieces, BlackPieces);
+                            checkmoves(x, y, scalee, legalmoves);
+                        }
+                        else
+                        {
+                            movethepiece(x, y, scalee);
+                        }
                         break;
+                }
+            }
+        }
+
+        public void checkmoves(int x, int y, int scalee, List<ec> legalmoves)
+        {
+            if (movecounter % 2 == 0)
+            {
+                foreach (Piece wp in WhitePieces)
+                {
+                    if (x == wp.Coordinates.x && y == wp.Coordinates.y)
+                    {
+                        foreach (ec pm in legalmoves)
+                        {
+                            if (wp.Coordinates.x == pm.cpos.x && wp.Coordinates.y == pm.cpos.y)
+                            {
+                                movethepiece(scalee, x, y, pm.pmoves);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (Piece bp in BlackPieces)
+                {
+                    if (x == bp.Coordinates.x && y == bp.Coordinates.y)
+                    {
+                        foreach (ec pm in legalmoves)
+                        {
+                            if (bp.Coordinates.x == pm.cpos.x && bp.Coordinates.y == pm.cpos.y)
+                            {
+                                movethepiece(scalee, x, y, pm.pmoves);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -404,7 +473,27 @@ namespace ChessTry2
             if (name != "")
             {
                 int index = 1;
-                List<Coordinates> legalmoves = p.move(name, c, WhitePieces, BlackPieces, movecounter, color);
+                List<Coordinates> legalmoves = p.move(name, c, WhitePieces, BlackPieces, color);
+                List<int> removecoordinates = new List<int>();  
+                foreach(Coordinates coordinates in legalmoves)
+                {
+                    List<Piece> wp = WhitePieces;
+                    List<Piece> bp = BlackPieces;
+                    if(modulo == 0)
+                    {
+                        foreach (Piece p in wp)
+                        {
+                            if(p.Coordinates.x == x && p.Coordinates.y == y)
+                            {
+                                p.Coordinates = coordinates;
+                            }
+                        }
+                        if (checkthreat(wp, bp))
+                        {
+                           removecoordinates.Add(legalmoves.IndexOf(coordinates));
+                        }
+                    }
+                }
                 if (legalmoves.Count > 0)
                 {
                     foreach (Coordinates move in legalmoves)
@@ -472,7 +561,121 @@ namespace ChessTry2
                 }
                 else
                 {
-                    drawboard(scalee, x, y);
+                    Console.SetCursorPosition(scale * 8 + 1, 3);
+                    Console.WriteLine("No move available haha lol");
+                    Console.ReadKey();
+                    Console.Clear();
+                }
+            }
+            else
+            {
+                Console.SetCursorPosition(this.scale * 8 + 1, 3);
+                Console.WriteLine("ITS NOT YOUR PIECE, DUMB FUCK!");
+                Console.ReadKey();
+                Console.Clear();
+            }
+        }
+        public void movethepiece(int scalee, int x, int y, List<Coordinates> coordinates)
+        {
+            string name = "";
+            Coordinates c = new Coordinates();
+            int modulo = movecounter % 2;
+            int color = 0;
+            switch (modulo)
+            {
+                case 0:
+                    foreach (Piece wp in WhitePieces)
+                    {
+                        if (wp.Coordinates.x == x && wp.Coordinates.y == y)
+                        {
+                            name = wp.name;
+                            c = wp.Coordinates;
+                            color = wp.color;
+                        }
+                    }
+                    break;
+                case 1:
+                    foreach (Piece bp in BlackPieces)
+                    {
+                        if (bp.Coordinates.x == x && bp.Coordinates.y == y)
+                        {
+                            name = bp.name;
+                            c = bp.Coordinates;
+                            color = bp.color;
+                        }
+                    }
+                    break;
+            }
+            if (name != "")
+            {
+                int index = 1;
+                List<Coordinates> legalmoves = coordinates;
+                if (legalmoves.Count > 0)
+                {
+                    foreach (Coordinates move in legalmoves)
+                    {
+                        Console.SetCursorPosition(scale * 8 + 1, index + 1);
+                        Console.WriteLine("Available Move [" + index + "]" + move.x + "," + move.y);
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.BackgroundColor = determinebackground(move.x, move.y);
+                        Console.SetCursorPosition((move.x * scale + scale / 3 + 1) - 2, move.y * scale / 2 + scale / 6);
+                        Console.Write(index);
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        index++;
+                    }
+                    Console.SetCursorPosition(scale * 8 + 1, index + 2);
+                    Console.WriteLine("Select the INDEX to move the PIECE, 0 to exit");
+                    int select = int.Parse(Console.ReadLine());
+                    if (select == 0)
+                    {
+                        Console.Clear();
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        if (modulo == 0)
+                        {
+                            foreach (Piece wp in WhitePieces)
+                            {
+                                if (wp.Coordinates == c)
+                                {
+                                    wp.Coordinates = legalmoves[select - 1];
+                                    for (int i = 0; i < BlackPieces.Count; i++)
+                                    {
+                                        if (BlackPieces[i].Coordinates.x == wp.Coordinates.x && BlackPieces[i].Coordinates.y == wp.Coordinates.y)
+                                        {
+                                            BlackPieces.RemoveAt(i);
+                                        }
+                                    }
+                                    movecounter++;
+                                }
+                            }
+                        }
+                        if (modulo == 1)
+                        {
+                            foreach (Piece bp in BlackPieces)
+                            {
+                                if (bp.Coordinates == c)
+                                {
+                                    bp.Coordinates = legalmoves[select - 1];
+                                    for (int i = 0; i < WhitePieces.Count; i++)
+                                    {
+                                        if (WhitePieces[i].Coordinates.x == bp.Coordinates.x && WhitePieces[i].Coordinates.y == bp.Coordinates.y)
+                                        {
+                                            WhitePieces.RemoveAt(i);
+                                        }
+                                    }
+                                    movecounter++;
+                                }
+                            }
+
+                        }
+                        promotionchecker(color, scalee, x, y);
+                    }
+                }
+                else
+                {
                     Console.SetCursorPosition(scale * 8 + 1, index + 2);
                     Console.WriteLine("No move available haha lol");
                     Console.ReadKey();
@@ -481,7 +684,6 @@ namespace ChessTry2
             }
             else
             {
-                drawboard(scalee, x, y);
                 Console.SetCursorPosition(this.scale * 8 + 1, 3);
                 Console.WriteLine("ITS NOT YOUR PIECE, DUMB FUCK!");
                 Console.ReadKey();
@@ -744,6 +946,38 @@ namespace ChessTry2
                 }
             }
             return 0;
+        }
+
+        public void testdraw()
+        {
+            List<ec> pp = checkmate(WhitePieces, BlackPieces);
+            Console.Clear();
+            foreach (ec p in pp)
+            {
+                string name = "";
+                foreach (Piece piece in WhitePieces)
+                {
+                    if (p.cpos.x == piece.Coordinates.x && p.cpos.y == piece.Coordinates.y)
+                    {
+                        name = piece.name;
+                    }
+                }
+                foreach (Piece piece in BlackPieces)
+                {
+                    if (p.cpos.x == piece.Coordinates.x && p.cpos.y == piece.Coordinates.y)
+                    {
+                        name = piece.name;
+                    }
+                }
+                Console.WriteLine(name);
+                foreach (Coordinates c in p.pmoves)
+                {
+                    Console.WriteLine("      Coordinates: " + c.x + "," + c.y);
+                    Console.WriteLine();
+                }
+                Console.WriteLine();
+            }
+            Console.ReadKey();
         }
     }
 }
