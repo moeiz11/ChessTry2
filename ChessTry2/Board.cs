@@ -200,7 +200,6 @@ namespace ChessTry2
                     }
                 }
             }
-
             return false;
         }
         public List<ec> checkmate(List<Piece> WhitePiecesList, List<Piece> BlackPiecesList)
@@ -473,24 +472,35 @@ namespace ChessTry2
             if (name != "")
             {
                 int index = 1;
-                List<Coordinates> legalmoves = p.move(name, c, WhitePieces, BlackPieces, color);
-                List<int> removecoordinates = new List<int>();  
-                foreach(Coordinates coordinates in legalmoves)
+                List<Coordinates> pseudolegalmoves = p.move(name, c, WhitePieces, BlackPieces, color);
+                List<Coordinates> legalmoves = new List<Coordinates>();
+                foreach (Piece piece in WhitePieces)
                 {
-                    List<Piece> wp = WhitePieces;
-                    List<Piece> bp = BlackPieces;
-                    if(modulo == 0)
+                    if(piece.Coordinates.x == c.x && piece.Coordinates.y == y)
                     {
-                        foreach (Piece p in wp)
+                        foreach(Coordinates move in pseudolegalmoves)
                         {
-                            if(p.Coordinates.x == x && p.Coordinates.y == y)
+                            piece.Coordinates = move;
+                            if (!checkthreat(WhitePieces, BlackPieces))
                             {
-                                p.Coordinates = coordinates;
+                                legalmoves.Add(move);
                             }
+                            piece.Coordinates = c;
                         }
-                        if (checkthreat(wp, bp))
+                    }
+                }
+                foreach (Piece piece in BlackPieces)
+                {
+                    if (piece.Coordinates.x == c.x && piece.Coordinates.y == y)
+                    {
+                        foreach (Coordinates move in pseudolegalmoves)
                         {
-                           removecoordinates.Add(legalmoves.IndexOf(coordinates));
+                            piece.Coordinates = move;
+                            if (!checkthreat(WhitePieces, BlackPieces))
+                            {
+                                legalmoves.Add(move);
+                            }
+                            piece.Coordinates = c;
                         }
                     }
                 }
@@ -609,7 +619,38 @@ namespace ChessTry2
             if (name != "")
             {
                 int index = 1;
+                List<Coordinates> pseudolegalmoves = coordinates;
                 List<Coordinates> legalmoves = coordinates;
+                foreach (Piece piece in WhitePieces)
+                {
+                    if (piece.Coordinates.x == c.x && piece.Coordinates.y == y)
+                    {
+                        foreach (Coordinates move in pseudolegalmoves)
+                        {
+                            piece.Coordinates = move;
+                            if (!checkthreat(WhitePieces, BlackPieces))
+                            {
+                                legalmoves.Add(move);
+                            }
+                            piece.Coordinates = c;
+                        }
+                    }
+                }
+                foreach (Piece piece in BlackPieces)
+                {
+                    if (piece.Coordinates.x == c.x && piece.Coordinates.y == y)
+                    {
+                        foreach (Coordinates move in pseudolegalmoves)
+                        {
+                            piece.Coordinates = move;
+                            if (!checkthreat(WhitePieces, BlackPieces))
+                            {
+                                legalmoves.Add(move);
+                            }
+                            piece.Coordinates = c;
+                        }
+                    }
+                }
                 if (legalmoves.Count > 0)
                 {
                     foreach (Coordinates move in legalmoves)
