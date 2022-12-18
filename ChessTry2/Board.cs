@@ -298,9 +298,24 @@ namespace ChessTry2
                 Console.CursorVisible = false;
                 bool check = false;
                 drawboard(scalee, x, y);
+                List<ec> lmoves = new List<ec>(); 
                 if (checkthreat(WhitePieces, BlackPieces))
                 {
                     check = true;
+                    List<ec> legalmoves = checkmate(WhitePieces, BlackPieces);
+                    bool checkmated = true;
+                    for (int j = 0; j < legalmoves.Count; j++)
+                    {
+                        if (legalmoves[j].pmoves.Count > 0)
+                        {
+                            checkmated = false;
+                        }
+                    }
+                    if (checkmated)
+                    {
+                        break;
+                    }
+                    lmoves = legalmoves;
                 }
                 var command = Console.ReadKey().Key;
                 switch (command)
@@ -348,23 +363,7 @@ namespace ChessTry2
                     case ConsoleKey.Enter:
                         if (check)
                         {
-                            List<ec> legalmoves = checkmate(WhitePieces, BlackPieces);
-                            bool checkmated = true;
-                            for(int j= 0; j < legalmoves.Count; j++)
-                            {
-                                if (legalmoves[j].pmoves.Count > 0)
-                                {
-                                    checkmated = false;
-                                }
-                            }
-                            if (checkmated)
-                            {
-                                run = false; 
-                            }
-                            else
-                            {
-                                checkmoves(x, y, scalee, legalmoves);
-                            }
+                            checkmoves(x, y, scalee, lmoves);
                         }
                         else
                         {
@@ -531,15 +530,32 @@ namespace ChessTry2
                 {
                     foreach (Piece piece in WhitePieces)
                     {
-                        List<Piece> bpl = BlackPieces; 
                         if (piece.Coordinates.x == c.x && piece.Coordinates.y == y)
                         {
-                            foreach (Coordinates move in pseudolegalmoves)
+                            foreach (Coordinates fmove in pseudolegalmoves)
                             {
-                                piece.Coordinates = move;
-                                if (!checkthreat(WhitePieces, BlackPieces))
+                                piece.Coordinates = fmove;
+                                List<Piece> blackpieceschanged = new List<Piece>();
+                                foreach (Piece bp in BlackPieces)
                                 {
-                                    legalmoves.Add(move);
+                                    if (fmove.x != bp.Coordinates.x || fmove.y != bp.Coordinates.y)
+                                    {
+                                        blackpieceschanged.Add(bp);
+                                    }
+                                }
+                                if (blackpieceschanged.Count == BlackPieces.Count)
+                                {
+                                    if (!checkthreat(WhitePieces, BlackPieces))
+                                    {
+                                        legalmoves.Add(fmove);
+                                    }
+                                }
+                                else
+                                {
+                                    if (!checkthreat(WhitePieces, blackpieceschanged))
+                                    {
+                                        legalmoves.Add(fmove);
+                                    }
                                 }
                                 piece.Coordinates = c;
                             }
@@ -550,15 +566,32 @@ namespace ChessTry2
                 {
                     foreach (Piece piece in BlackPieces)
                     {
-                        List<Piece> wpl = WhitePieces;
                         if (piece.Coordinates.x == c.x && piece.Coordinates.y == y)
                         {
-                            foreach (Coordinates move in pseudolegalmoves)
+                            foreach (Coordinates fmove in pseudolegalmoves)
                             {
-                                piece.Coordinates = move;
-                                if (!checkthreat(WhitePieces, BlackPieces))
+                                piece.Coordinates = fmove;
+                                List<Piece> whitepieceschanged = new List<Piece>();
+                                foreach (Piece bp in BlackPieces)
                                 {
-                                    legalmoves.Add(move);
+                                    if (fmove.x != bp.Coordinates.x || fmove.y != bp.Coordinates.y)
+                                    {
+                                        whitepieceschanged.Add(bp);
+                                    }
+                                }
+                                if (whitepieceschanged.Count == WhitePieces.Count)
+                                {
+                                    if (!checkthreat(WhitePieces, BlackPieces))
+                                    {
+                                        legalmoves.Add(fmove);
+                                    }
+                                }
+                                else
+                                {
+                                    if (!checkthreat(whitepieceschanged, BlackPieces))
+                                    {
+                                        legalmoves.Add(fmove);
+                                    }
                                 }
                                 piece.Coordinates = c;
                             }
