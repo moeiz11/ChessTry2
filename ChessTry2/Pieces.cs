@@ -27,6 +27,7 @@ namespace ChessTry2
             this.name = name;
             this.Coordinates = Coordinates;
             this.color = color;
+            movec = 0;
             if(name == "P")
             {
                 step = 1;

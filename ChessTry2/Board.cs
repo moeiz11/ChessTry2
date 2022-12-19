@@ -28,11 +28,9 @@ namespace ChessTry2
         public Piece p { get; set; }
         public int scale { get; set; }
         public int movecounter { get; set; } = 0;
-        public int changecounter { get; set; } = 0;
         public ConsoleColor primary { get; set; }
         public ConsoleColor secondary { get; set; }
         public Piece lastpiece { get; set; }
-
         public Board(int scale, ConsoleColor primary, ConsoleColor secondary)
         {
             this.primary = primary;
@@ -137,6 +135,159 @@ namespace ChessTry2
                 }
             }
         }
+        public Coordinates castle(string name, Coordinates c , int movec , List<Piece> whitepieceslist, List<Piece> blackpieceslist, int color)
+        {
+            List<Piece> wpl = new List<Piece>();
+            wpl = whitepieceslist;
+            List<Piece> bpl = new List<Piece>();
+            bpl = blackpieceslist;  
+            if(color == 0 && movec == 0 && name == "K")
+            {
+                bool queenside = false;
+                bool kingside = false;  
+                foreach(Piece wp in wpl)
+                {
+                    if(wp.name == "R" && wp.movec == 0 && wp.Coordinates.x == 0)
+                    {
+                        List<Coordinates> fmoves = wp.move(wp.name, wp.Coordinates, wpl, bpl, wp.color);
+                        foreach(Coordinates fmove in fmoves)
+                        {
+                            if(fmove.x == 3)
+                            {
+                                Coordinates square1 = new Coordinates(2, 7);
+                                Coordinates square2 = new Coordinates(3, 7);
+                                foreach(Piece bp in bpl)
+                                {
+                                    List<Coordinates> bfmoves = bp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
+                                    foreach(Coordinates bfmove in bfmoves)
+                                    {
+                                        if(bfmove != square1 || bfmove != square2)
+                                        {
+                                            queenside = true;
+                                        }
+                                        else if(bfmove == square1 || bfmove == square2)
+                                        {
+                                            queenside = false;
+                                            break;
+                                        }
+                                    }
+                                    if (queenside)
+                                    {
+                                        return square1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if(wp.name == "R" && wp.movec == 0 && wp.Coordinates.x == 7)
+                    {
+                        List<Coordinates> fmoves = wp.move(wp.name, wp.Coordinates, wpl, bpl, wp.color);
+                        foreach (Coordinates fmove in fmoves)
+                        {
+                            if (fmove.x == 5)
+                            {
+                                Coordinates square1 = new Coordinates(6, 7);
+                                Coordinates square2 = new Coordinates(5, 7);
+                                foreach (Piece bp in bpl)
+                                {
+                                    List<Coordinates> bfmoves = bp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
+                                    foreach (Coordinates bfmove in bfmoves)
+                                    {
+                                        if (bfmove != square1 || bfmove != square2)
+                                        {
+                                            kingside = true;
+                                        }
+                                        else if (bfmove == square1 || bfmove == square2)
+                                        {
+                                            kingside = false;
+                                            break;
+                                        }
+                                    }
+                                    if (kingside)
+                                    {
+                                        return square1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if(color == 1 && movec == 0 && name == "K")
+            {
+                bool queenside = false;
+                bool kingside = false;
+                foreach (Piece bp in bpl)
+                {
+                    if (bp.name == "R" && bp.movec == 0 && bp.Coordinates.x == 0)
+                    {
+                        List<Coordinates> fmoves = bp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
+                        foreach (Coordinates fmove in fmoves)
+                        {
+                            if (fmove.x == 3)
+                            {
+                                Coordinates square1 = new Coordinates(2, 0);
+                                Coordinates square2 = new Coordinates(3, 0);
+                                foreach (Piece wp in wpl)
+                                {
+                                    List<Coordinates> wfmoves = wp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
+                                    foreach (Coordinates wfmove in wfmoves)
+                                    {
+                                        if (wfmove != square1 || wfmove != square2)
+                                        {
+                                            queenside = true;
+                                        }
+                                        else if (wfmove == square1 || wfmove == square2)
+                                        {
+                                            queenside = false;
+                                            break;
+                                        }
+                                    }
+                                    if (queenside)
+                                    {
+                                        return square1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (bp.name == "R" && bp.movec == 0 && bp.Coordinates.x == 7)
+                    {
+                        List<Coordinates> fmoves = bp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
+                        foreach (Coordinates fmove in fmoves)
+                        {
+                            if (fmove.x == 5)
+                            {
+                                Coordinates square1 = new Coordinates(6, 0);
+                                Coordinates square2 = new Coordinates(5, 0);
+                                foreach (Piece wp in wpl)
+                                {
+                                    List<Coordinates> wfmoves = wp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
+                                    foreach (Coordinates wfmove in wfmoves)
+                                    {
+                                        if (wfmove != square1 || wfmove != square2)
+                                        {
+                                            kingside = true;
+                                        }
+                                        else if (wfmove == square1 || wfmove == square2)
+                                        {
+                                            kingside = false;
+                                            break;
+                                        }
+                                    }
+                                    if (kingside)
+                                    {
+                                        return square1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+            return null;
+        }
         public Coordinates getkingcoords(int color, List<Piece> wp, List<Piece> bp)
         {
             if (color == 0)
@@ -164,6 +315,7 @@ namespace ChessTry2
                 return coordinates;
             }      
         }
+
         public bool checkthreat(List<Piece> WhitePiecesList, List<Piece> BlackPiecesList)
         {
             List<Piece> wpl = WhitePiecesList;
@@ -213,9 +365,6 @@ namespace ChessTry2
                     {
                         if(wp.Coordinates.x - 1 == lastpiece.Coordinates.x || wp.Coordinates.x + 1 == lastpiece.Coordinates.x)
                         {
-                           // Console.Clear();
-                           // Console.WriteLine("VERARSCHT");
-                           // Console.ReadKey();
                             passant = true;
                         }
                     }
@@ -235,9 +384,6 @@ namespace ChessTry2
                     {
                         if(bp.Coordinates.x - 1 == lastpiece.Coordinates.x || bp.Coordinates.x + 1 == lastpiece.Coordinates.x)
                         {
-                           // Console.Clear();
-                           // Console.WriteLine("VERARSCHT");
-                           // Console.ReadKey();
                             passant = true;
                         }
                     }
@@ -306,7 +452,7 @@ namespace ChessTry2
                        List<Piece> whitepieceschanged = new List<Piece>();
                         foreach (Piece wp in wpl)
                         {
-                            if (fmove.x != bp.Coordinates.x || fmove.y != bp.Coordinates.y)
+                            if (fmove.x != wp.Coordinates.x || fmove.y != wp.Coordinates.y)
                             {
                                 whitepieceschanged.Add(wp);
                             }
@@ -543,6 +689,7 @@ namespace ChessTry2
             Coordinates c = new Coordinates();
             int modulo = movecounter % 2;
             int color = 0;
+            int movec = 0;
             switch (modulo)
             {
                 case 0:
@@ -553,6 +700,7 @@ namespace ChessTry2
                             name = wp.name;
                             c = wp.Coordinates;
                             color = wp.color;
+                            movec = wp.movec;
                         }
                     }
                     break;
@@ -564,6 +712,7 @@ namespace ChessTry2
                             name = bp.name;
                             c = bp.Coordinates;
                             color = bp.color;
+                            movec = bp.movec;
                         }
                     }
                     break;
@@ -580,6 +729,11 @@ namespace ChessTry2
                     passant = true;
                 }
                 List<Coordinates> legalmoves = new List<Coordinates>();
+                Coordinates cstle = castle(name, c, movec, WhitePieces, BlackPieces, color);
+                if (cstle != null)
+                {
+                   legalmoves.Add(cstle);
+                }
                 if (modulo == 0)
                 {
                     foreach (Piece piece in WhitePieces)
@@ -703,7 +857,7 @@ namespace ChessTry2
                                     {
                                         wp.step = 2;
                                     }
-                                    if (enpas != null)
+                                    if (enpas != null || cstle != null)
                                     {
                                         if(enpas == legalmoves[select - 1])
                                         {
@@ -715,14 +869,40 @@ namespace ChessTry2
                                                 }
                                             }
                                         }
+                                        if(cstle == legalmoves[select - 1])
+                                        {
+                                            Coordinates ks = new Coordinates(6, 7);
+                                            Coordinates qs = new Coordinates(2, 7);
+                                            if(cstle.x == ks.x)
+                                            {
+                                                foreach (Piece krook in WhitePieces)
+                                                {
+                                                    if(krook.name == "R" && krook.Coordinates.x == 7)
+                                                    {
+                                                        krook.Coordinates = new Coordinates(5, 7);
+                                                    }
+                                                }
+                                            }
+                                            else if(cstle.x == qs.x)
+                                            {
+                                                foreach(Piece qrook in WhitePieces)
+                                                {
+                                                    if(qrook.name == "R" && qrook.Coordinates.x == 0)
+                                                    {
+                                                        qrook.Coordinates = new Coordinates(3, 7);
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                     for (int i = 0; i < BlackPieces.Count; i++)
                                     {
-                                        if (BlackPieces[i].Coordinates.x == wp.Coordinates.x && BlackPieces[i].Coordinates.y == wp.Coordinates.y)
-                                        {
-                                            BlackPieces.RemoveAt(i);
-                                        }
+                                       if (BlackPieces[i].Coordinates.x == wp.Coordinates.x && BlackPieces[i].Coordinates.y == wp.Coordinates.y)
+                                       {
+                                           BlackPieces.RemoveAt(i);
+                                       }
                                     }
+                                    wp.movec = wp.movec + 1;
                                     lastpiece = wp;
                                     movecounter++;
                                 }
@@ -743,7 +923,7 @@ namespace ChessTry2
                                     {
                                         bp.step = 2;
                                     }
-                                    if (enpas != null)
+                                    if (enpas != null || cstle != null)
                                     {
                                         if (enpas == legalmoves[select - 1])
                                         {
@@ -755,15 +935,41 @@ namespace ChessTry2
                                                 }
                                             }
                                         }
+                                        if(cstle == legalmoves[select - 1])
+                                        {
+                                            Coordinates ks = new Coordinates(6, 0);
+                                            Coordinates qs = new Coordinates(2, 0);
+                                            if (cstle.x == ks.x)
+                                            {
+                                                foreach (Piece krook in BlackPieces)
+                                                {
+                                                    if (krook.name == "R" && krook.Coordinates.x == 7)
+                                                    {
+                                                        krook.Coordinates = new Coordinates(5, 0);
+                                                    }
+                                                }
+                                            }
+                                            else if (cstle.x == qs.x)
+                                            {
+                                                foreach (Piece qrook in BlackPieces)
+                                                {
+                                                    if (qrook.name == "R" && qrook .Coordinates.x == 0)
+                                                    {
+                                                        qrook.Coordinates = new Coordinates(3, 0);
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                     for (int i = 0; i < WhitePieces.Count; i++)
                                     {
                                         if (WhitePieces[i].Coordinates.x == bp.Coordinates.x && WhitePieces[i].Coordinates.y == bp.Coordinates.y)
-                                        { 
+                                        {
                                             WhitePieces.RemoveAt(i);
                                         }
                                     }
-                                    lastpiece = bp;
+                                    bp.movec =bp.movec + 1;
+                                    lastpiece = bp;                                 
                                     movecounter++;
                                 }
                             }
@@ -940,6 +1146,8 @@ namespace ChessTry2
                                            BlackPieces.RemoveAt(i);
                                        }
                                     }
+                                    wp.movec = wp.movec + 1;
+                                    lastpiece = wp;
                                     movecounter++;
                                 }
                             }
@@ -979,6 +1187,8 @@ namespace ChessTry2
                                             WhitePieces.RemoveAt(i);
                                         }
                                     }
+                                    bp.movec = bp.movec + 1;
+                                    lastpiece = bp;
                                     movecounter++;
                                 }
                             }
