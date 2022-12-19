@@ -12,6 +12,8 @@ namespace ChessTry2
         public string name { get; set; }
         public Coordinates Coordinates { get; set; }
         public int color { get; set; }
+        public int movec { get; set; }
+        public int step { get; set; } 
         public Piece()
         {
 
@@ -25,6 +27,10 @@ namespace ChessTry2
             this.name = name;
             this.Coordinates = Coordinates;
             this.color = color;
+            if(name == "P")
+            {
+                step = 1;
+            }
         }
         public List<Coordinates> move(string piece, Coordinates c, List<Piece> wp, List<Piece> bp, int color)
         {

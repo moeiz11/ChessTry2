@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
+using System.Timers;
 using System.Xml;
 namespace ChessTry2
 {
@@ -24,15 +26,12 @@ namespace ChessTry2
         public List<Piece> BlackPieces { get; set; }
         public List<Cell> Cells { get; set; }
         public Piece p { get; set; }
-        public bool checkwhite = false;
-        public bool checkblack = false;
-        public Coordinates whiteking = new Coordinates(0,0);
-        public Coordinates blackking = new Coordinates(0, 0);
         public int scale { get; set; }
         public int movecounter { get; set; } = 0;
         public int changecounter { get; set; } = 0;
         public ConsoleColor primary { get; set; }
         public ConsoleColor secondary { get; set; }
+        public Piece lastpiece { get; set; }
 
         public Board(int scale, ConsoleColor primary, ConsoleColor secondary)
         {
@@ -147,7 +146,6 @@ namespace ChessTry2
                 {
                     if (piece.name == "K")
                     {
-                        whiteking = piece.Coordinates;
                         coordinates = piece.Coordinates;
                     }
                 }
@@ -160,7 +158,6 @@ namespace ChessTry2
                 {
                     if (piece.name == "K")
                     {
-                        blackking = piece.Coordinates;
                         coordinates = piece.Coordinates;
                     }
                 }
@@ -198,10 +195,60 @@ namespace ChessTry2
                         {
                             return true;
                         }
-                    }
+                    }        
                 }
             }
             return false;
+        }
+        public Coordinates enpassant(string name, List<Piece> whitepieceslist, List<Piece> blackpieceslist, int color, Piece lastpiece, Coordinates c)
+        {
+            List<Piece> wpl = whitepieceslist;
+            List<Piece> bpl = blackpieceslist;
+            bool passant = false;
+            if (name == "P" && c.y == 3 && movecounter > 0 && color == 0 && lastpiece.name == "P" && lastpiece.color == 1 && lastpiece.step == 0)
+            {
+                foreach(Piece wp in wpl)
+                {
+                    if(wp.name == "P" && wp.Coordinates.y == lastpiece.Coordinates.y)
+                    {
+                        if(wp.Coordinates.x - 1 == lastpiece.Coordinates.x || wp.Coordinates.x + 1 == lastpiece.Coordinates.x)
+                        {
+                           // Console.Clear();
+                           // Console.WriteLine("VERARSCHT");
+                           // Console.ReadKey();
+                            passant = true;
+                        }
+                    }
+                    if (passant)
+                    {
+
+                       Coordinates pas = new Coordinates(lastpiece.Coordinates.x, lastpiece.Coordinates.y - 1);
+                       return pas;
+                    }
+                }
+            }
+            if (name == "P" && c.y == 4 && movecounter > 0 && color == 1 && lastpiece.name == "P" && lastpiece.color == 0 && lastpiece.step == 0)
+            {
+                foreach(Piece bp in bpl)
+                {
+                    if (bp.name == "P" && bp.Coordinates.y == lastpiece.Coordinates.y)
+                    {
+                        if(bp.Coordinates.x - 1 == lastpiece.Coordinates.x || bp.Coordinates.x + 1 == lastpiece.Coordinates.x)
+                        {
+                           // Console.Clear();
+                           // Console.WriteLine("VERARSCHT");
+                           // Console.ReadKey();
+                            passant = true;
+                        }
+                    }
+                    if (passant)
+                    {
+                       Coordinates pas = new Coordinates(lastpiece.Coordinates.x, lastpiece.Coordinates.y + 1);
+                       return pas;
+                    }
+                }
+            }
+            return null;
         }
         public List<ec> checkmate(List<Piece> WhitePiecesList, List<Piece> BlackPiecesList)
         {
@@ -524,7 +571,14 @@ namespace ChessTry2
             if (name != "")
             {
                 int index = 1;
+                bool passant = false;
                 List<Coordinates> pseudolegalmoves = p.move(name, c, WhitePieces, BlackPieces, color);
+                Coordinates enpas = enpassant(name,WhitePieces, BlackPieces, color, this.lastpiece, c);
+                if (enpas != null)
+                {
+                    pseudolegalmoves.Add(enpas);
+                    passant = true;
+                }
                 List<Coordinates> legalmoves = new List<Coordinates>();
                 if (modulo == 0)
                 {
@@ -540,7 +594,13 @@ namespace ChessTry2
                                 {
                                     if (fmove.x != bp.Coordinates.x || fmove.y != bp.Coordinates.y)
                                     {
-                                        blackpieceschanged.Add(bp);
+                                        if (passant == true && lastpiece == bp)
+                                        { 
+                                        }
+                                        else
+                                        {
+                                            blackpieceschanged.Add(bp);
+                                        }
                                     }
                                 }
                                 if (blackpieceschanged.Count == BlackPieces.Count)
@@ -572,11 +632,17 @@ namespace ChessTry2
                             {
                                 piece.Coordinates = fmove;
                                 List<Piece> whitepieceschanged = new List<Piece>();
-                                foreach (Piece bp in BlackPieces)
+                                foreach (Piece wp in WhitePieces)
                                 {
-                                    if (fmove.x != bp.Coordinates.x || fmove.y != bp.Coordinates.y)
+                                    if (fmove.x != wp.Coordinates.x || fmove.y != wp.Coordinates.y)
                                     {
-                                        whitepieceschanged.Add(bp);
+                                        if (passant == true && lastpiece == wp)
+                                        {
+                                        }
+                                        else
+                                        {
+                                            whitepieceschanged.Add(wp);
+                                        }
                                     }
                                 }
                                 if (whitepieceschanged.Count == WhitePieces.Count)
@@ -629,6 +695,27 @@ namespace ChessTry2
                                 if (wp.Coordinates == c)
                                 {
                                     wp.Coordinates = legalmoves[select - 1];
+                                    if (wp.name == "P" && c.y == 6 && legalmoves[select - 1].y + 2 == c.y)
+                                    {
+                                        wp.step = wp.step - 1;
+                                    }
+                                    else
+                                    {
+                                        wp.step = 2;
+                                    }
+                                    if (enpas != null)
+                                    {
+                                        if(enpas == legalmoves[select - 1])
+                                        {
+                                            for (int i = 0; i < BlackPieces.Count; i++)
+                                            {
+                                                if (BlackPieces[i].Coordinates.x == wp.Coordinates.x && BlackPieces[i].Coordinates.y == wp.Coordinates.y + 1)
+                                                {
+                                                    BlackPieces.RemoveAt(i);
+                                                }
+                                            }
+                                        }
+                                    }
                                     for (int i = 0; i < BlackPieces.Count; i++)
                                     {
                                         if (BlackPieces[i].Coordinates.x == wp.Coordinates.x && BlackPieces[i].Coordinates.y == wp.Coordinates.y)
@@ -636,6 +723,7 @@ namespace ChessTry2
                                             BlackPieces.RemoveAt(i);
                                         }
                                     }
+                                    lastpiece = wp;
                                     movecounter++;
                                 }
                             }
@@ -647,13 +735,35 @@ namespace ChessTry2
                                 if (bp.Coordinates == c)
                                 {
                                     bp.Coordinates = legalmoves[select - 1];
+                                    if (bp.name == "P" && c.y == 1 && legalmoves[select - 1].y - 2 == c.y)
+                                    {
+                                        bp.step = bp.step - 1;
+                                    }
+                                    else
+                                    {
+                                        bp.step = 2;
+                                    }
+                                    if (enpas != null)
+                                    {
+                                        if (enpas == legalmoves[select - 1])
+                                        {
+                                            for (int i = 0; i < WhitePieces.Count; i++)
+                                            {
+                                                if (WhitePieces[i].Coordinates.x == bp.Coordinates.x && WhitePieces[i].Coordinates.y == bp.Coordinates.y - 1)
+                                                {
+                                                    WhitePieces.RemoveAt(i);
+                                                }
+                                            }
+                                        }
+                                    }
                                     for (int i = 0; i < WhitePieces.Count; i++)
                                     {
                                         if (WhitePieces[i].Coordinates.x == bp.Coordinates.x && WhitePieces[i].Coordinates.y == bp.Coordinates.y)
-                                        {
+                                        { 
                                             WhitePieces.RemoveAt(i);
                                         }
                                     }
+                                    lastpiece = bp;
                                     movecounter++;
                                 }
                             }
@@ -714,6 +824,63 @@ namespace ChessTry2
             {
                 int index = 1;
                 List<Coordinates> legalmoves = coordinates;
+                Coordinates enpas = enpassant(name, WhitePieces, BlackPieces, color, this.lastpiece, c);
+                if (enpas != null)
+                { 
+                   
+                    if(color == 0)
+                    {
+                        foreach (Piece wp in WhitePieces)
+                        {
+                            if (wp.Coordinates.x == c.x && wp.Coordinates.y == c.y)
+                            {
+                                wp.Coordinates = enpas;
+                                List<Piece> bpl = new List<Piece>();
+                                foreach(Piece bp in BlackPieces)
+                                {
+                                    if (bp.Coordinates.x == wp.Coordinates.x && bp.Coordinates.y == wp.Coordinates.y + 1)
+                                    {
+                                    }
+                                    else
+                                    {
+                                        bpl.Add(bp);
+                                    }
+                                }
+                                if (!checkthreat(WhitePieces, bpl))
+                                {
+                                    legalmoves.Add(enpas);
+                                }
+                                wp.Coordinates = c;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (Piece bp in BlackPieces)
+                        {
+                            if (bp.Coordinates.x == c.x && bp.Coordinates.y == c.y)
+                            {
+                                bp.Coordinates = enpas;
+                                List<Piece> wpl = new List<Piece>();
+                                foreach (Piece wp in WhitePieces)
+                                {
+                                    if (wp.Coordinates.x == bp.Coordinates.x && wp.Coordinates.y == bp.Coordinates.y - 1)
+                                    {
+                                    }
+                                    else
+                                    {
+                                        wpl.Add(wp);
+                                    }
+                                }
+                                if (!checkthreat(wpl, BlackPieces))
+                                {
+                                    legalmoves.Add(enpas);
+                                }
+                                bp.Coordinates = c;
+                            }
+                        }
+                    }
+                }
                 if (legalmoves.Count > 0)
                 {
                     foreach (Coordinates move in legalmoves)
@@ -745,12 +912,33 @@ namespace ChessTry2
                                 if (wp.Coordinates == c)
                                 {
                                     wp.Coordinates = legalmoves[select - 1];
+                                    if (wp.name == "P" && c.y == 6 && legalmoves[select - 1].y + 2 == c.y)
+                                    {
+                                        wp.step = wp.step - 1;
+                                    }
+                                    else
+                                    {
+                                        wp.step = 2;
+                                    }
+                                    if (enpas != null)
+                                    {
+                                        if (enpas == legalmoves[select - 1])
+                                        {
+                                            for (int i = 0; i < BlackPieces.Count; i++)
+                                            {
+                                                if (BlackPieces[i].Coordinates.x == wp.Coordinates.x && BlackPieces[i].Coordinates.y == wp.Coordinates.y + 1)
+                                                {
+                                                    BlackPieces.RemoveAt(i);
+                                                }
+                                            }
+                                        }
+                                    }
                                     for (int i = 0; i < BlackPieces.Count; i++)
                                     {
-                                        if (BlackPieces[i].Coordinates.x == wp.Coordinates.x && BlackPieces[i].Coordinates.y == wp.Coordinates.y)
-                                        {
-                                            BlackPieces.RemoveAt(i);
-                                        }
+                                       if (BlackPieces[i].Coordinates.x == wp.Coordinates.x && BlackPieces[i].Coordinates.y == wp.Coordinates.y)
+                                       {
+                                           BlackPieces.RemoveAt(i);
+                                       }
                                     }
                                     movecounter++;
                                 }
@@ -763,6 +951,27 @@ namespace ChessTry2
                                 if (bp.Coordinates == c)
                                 {
                                     bp.Coordinates = legalmoves[select - 1];
+                                    if (bp.name == "P" && c.y == 1 && legalmoves[select - 1].y - 2 == c.y)
+                                    {
+                                        bp.step = bp.step - 1;
+                                    }
+                                    else
+                                    {
+                                        bp.step = 2;
+                                    }
+                                    if (enpas != null)
+                                    {
+                                        if (enpas == legalmoves[select - 1])
+                                        {
+                                            for (int i = 0; i < WhitePieces.Count; i++)
+                                            {
+                                                if (WhitePieces[i].Coordinates.x == bp.Coordinates.x && WhitePieces[i].Coordinates.y == bp.Coordinates.y - 1)
+                                                {
+                                                    WhitePieces.RemoveAt(i);
+                                                }
+                                            }
+                                        }
+                                    }
                                     for (int i = 0; i < WhitePieces.Count; i++)
                                     {
                                         if (WhitePieces[i].Coordinates.x == bp.Coordinates.x && WhitePieces[i].Coordinates.y == bp.Coordinates.y)
@@ -773,7 +982,6 @@ namespace ChessTry2
                                     movecounter++;
                                 }
                             }
-
                         }
                         promotionchecker(color, scalee, x, y);
                     }
