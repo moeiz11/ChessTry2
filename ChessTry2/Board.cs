@@ -143,8 +143,8 @@ namespace ChessTry2
             bpl = blackpieceslist;  
             if(color == 0 && movec == 0 && name == "K")
             {
-                bool queenside = false;
-                bool kingside = false;  
+                bool queenside = true;
+                bool kingside = true;
                 foreach(Piece wp in wpl)
                 {
                     if(wp.name == "R" && wp.movec == 0 && wp.Coordinates.x == 0)
@@ -161,20 +161,21 @@ namespace ChessTry2
                                     List<Coordinates> bfmoves = bp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
                                     foreach(Coordinates bfmove in bfmoves)
                                     {
-                                        if(bfmove != square1 || bfmove != square2)
+                                        if(bfmove.x == square1.x && bfmove.y == square1.y)
                                         {
-                                            queenside = true;
+                                            queenside = false;
+                                            break;
                                         }
-                                        else if(bfmove == square1 || bfmove == square2)
+                                        if(bfmove.x == square2.x && bfmove.y == square2.y)
                                         {
                                             queenside = false;
                                             break;
                                         }
                                     }
-                                    if (queenside)
-                                    {
-                                        return square1;
-                                    }
+                                }
+                                if (queenside == true)
+                                {
+                                    return square1;
                                 }
                             }
                         }
@@ -193,20 +194,21 @@ namespace ChessTry2
                                     List<Coordinates> bfmoves = bp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
                                     foreach (Coordinates bfmove in bfmoves)
                                     {
-                                        if (bfmove != square1 || bfmove != square2)
+                                        if (bfmove.x == square1.x && bfmove.y == square1.y)
                                         {
-                                            kingside = true;
+                                            kingside = false;
+                                            break;
                                         }
-                                        else if (bfmove == square1 || bfmove == square2)
+                                        if (bfmove.x == square2.x && bfmove.y == square2.y)
                                         {
                                             kingside = false;
                                             break;
                                         }
                                     }
-                                    if (kingside)
-                                    {
-                                        return square1;
-                                    }
+                                }
+                                if (kingside)
+                                {
+                                    return square1;
                                 }
                             }
                         }
@@ -215,8 +217,8 @@ namespace ChessTry2
             }
             else if(color == 1 && movec == 0 && name == "K")
             {
-                bool queenside = false;
-                bool kingside = false;
+                bool queenside = true;
+                bool kingside = true;
                 foreach (Piece bp in bpl)
                 {
                     if (bp.name == "R" && bp.movec == 0 && bp.Coordinates.x == 0)
@@ -233,20 +235,21 @@ namespace ChessTry2
                                     List<Coordinates> wfmoves = wp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
                                     foreach (Coordinates wfmove in wfmoves)
                                     {
-                                        if (wfmove != square1 || wfmove != square2)
+                                        if (wfmove.x == square1.x && wfmove.y == square1.y)
                                         {
-                                            queenside = true;
+                                            queenside = false;
+                                            break;
                                         }
-                                        else if (wfmove == square1 || wfmove == square2)
+                                        if (wfmove.x == square2.x && wfmove.y == square2.y)
                                         {
                                             queenside = false;
                                             break;
                                         }
                                     }
-                                    if (queenside)
-                                    {
-                                        return square1;
-                                    }
+                                }
+                                if (queenside)
+                                {
+                                    return square1;
                                 }
                             }
                         }
@@ -265,26 +268,26 @@ namespace ChessTry2
                                     List<Coordinates> wfmoves = wp.move(bp.name, bp.Coordinates, wpl, bpl, bp.color);
                                     foreach (Coordinates wfmove in wfmoves)
                                     {
-                                        if (wfmove != square1 || wfmove != square2)
+                                        if (wfmove.x == square1.x && wfmove.y == square1.y)
                                         {
-                                            kingside = true;
+                                            kingside = false;
+                                            break;
                                         }
-                                        else if (wfmove == square1 || wfmove == square2)
+                                        if (wfmove.x == square2.x && wfmove.y == square2.y)
                                         {
                                             kingside = false;
                                             break;
                                         }
                                     }
-                                    if (kingside)
-                                    {
-                                        return square1;
-                                    }
+                                }
+                                if (kingside)
+                                {
+                                    return square1;
                                 }
                             }
                         }
                     }
                 }
-
             }
             return null;
         }
@@ -670,7 +673,7 @@ namespace ChessTry2
             }
             foreach (Piece p in BlackPieces)
             {
-                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.ForegroundColor = ConsoleColor.Black;
                 Console.BackgroundColor = determinebackground(p.Coordinates.x, p.Coordinates.y);
                 if (p.Coordinates.x == a && p.Coordinates.y == b)
                 {

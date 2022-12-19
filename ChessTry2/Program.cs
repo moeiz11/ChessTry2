@@ -8,7 +8,7 @@ namespace ChessTry2
         {
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             int scale = 8;
-            Board board = new Board(scale, ConsoleColor.White, ConsoleColor.Green);
+            Board board = new Board(scale, ConsoleColor.White, ConsoleColor.Blue);
             board.start();
         }
     }
